@@ -1,0 +1,36 @@
+using AtominaCraft.Resources;
+using AtominaCraft.Resources.Windows;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+using System;
+
+namespace AtominaCraft
+{
+    static class Program
+    {
+        /// <summary>
+        ///  The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Native.AllocConsole();
+            WindowManager.Initialise();
+
+            GameWindowSettings gws = GameWindowSettings.Default;
+            gws.IsMultiThreaded = false;
+            gws.UpdateFrequency = 500;
+            gws.RenderFrequency = 100;
+
+            NativeWindowSettings nws = NativeWindowSettings.Default;
+            nws.Title = "AtominaCraft";
+            nws.Profile = ContextProfile.Compatability;
+
+            using (AtominaCraft atominaCraft = new AtominaCraft(gws, nws))
+            {
+                atominaCraft.Initialise();
+                atominaCraft.RunGameLoop();
+            }
+        }
+    }
+}
