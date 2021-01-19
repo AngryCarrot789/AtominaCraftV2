@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace AtominaCraft.Resources
+namespace AtominaCraft.ZResources
 {
     public static class Native
     {

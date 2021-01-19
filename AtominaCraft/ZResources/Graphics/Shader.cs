@@ -1,12 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using AtominaCraft.Logging;
-using AtominaCraft.Resources.Maths;
-using AtominaCraft.Resources.Strings;
+using AtominaCraft.ZResources.Logging;
+using AtominaCraft.ZResources.Maths;
+using AtominaCraft.ZResources.Strings;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AtominaCraft.Resources.Graphics
+namespace AtominaCraft.ZResources.Graphics
 {
     public class Shader : IDisposable
     {

@@ -1,5 +1,5 @@
 ﻿using AtominaCraft.Collision;
-using AtominaCraft.Resources.Maths;
+using AtominaCraft.ZResources.Maths;
 using AtominaCraft.Worlds;
 
 namespace AtominaCraft.Entities

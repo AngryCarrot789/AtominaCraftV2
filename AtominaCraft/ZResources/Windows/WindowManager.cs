@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace AtominaCraft.Resources.Windows
+namespace AtominaCraft.ZResources.Windows
 {
     public static class WindowManager
     {

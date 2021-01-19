@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtominaCraft.Logging
+namespace AtominaCraft.ZResources.Logging
 {
     public static class LogManager
     {

@@ -1,8 +1,8 @@
 ﻿using AtominaCraft.Entities.Player;
-using AtominaCraft.Resources.Maths;
+using AtominaCraft.ZResources.Maths;
 using System;
 
-namespace AtominaCraft.Resources.Graphics
+namespace AtominaCraft.ZResources.Graphics
 {
     public class GameObject : IDisposable
     {

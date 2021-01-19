@@ -1,4 +1,4 @@
-﻿namespace AtominaCraft.Resources.Maths
+﻿namespace AtominaCraft.ZResources.Maths
 {
     public class Vector4
     {

@@ -1,6 +1,6 @@
-﻿using AtominaCraft.Resources.Strings;
+﻿using AtominaCraft.ZResources.Strings;
 
-namespace AtominaCraft.Resources.Maths
+namespace AtominaCraft.ZResources.Maths
 {
     // only created my own matrix class cus nothing was working before with the OpenTK one,
     // except it wouldve if i knew how to opengl. dont really need this matrix class but eh

@@ -1,4 +1,4 @@
-﻿namespace AtominaCraft.Resources
+﻿namespace AtominaCraft.ZResources
 {
     /// <summary>
     /// A class containing the game's information, like name, width/height, etc.
@@ -41,7 +41,7 @@
         // Gameplay
         public static float MOUSE_SENSITIVITY       = 0.001f;
         public static float MOUSE_SMOOTHING         = 0.1f;
-        public const float DEFAULT_ACCELERATION_MULTIPLIER = 0.09f;
+        public const float DEFAULT_ACCELERATION_MULTIPLIER = 0.05f;
         public static float DEFAULT_FLY_SPEED       = 1.5f * DEFAULT_ACCELERATION_MULTIPLIER;
         public static float DEFAULT_WALK_SPEED      = 1.1f * DEFAULT_ACCELERATION_MULTIPLIER;
         public static float DEFAULT_SPRINT_SPEED    = 2.3f * DEFAULT_ACCELERATION_MULTIPLIER;

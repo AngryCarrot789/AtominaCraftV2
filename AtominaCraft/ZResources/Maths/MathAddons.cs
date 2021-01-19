@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AtominaCraft.Resources.Maths
+namespace AtominaCraft.ZResources.Maths
 {
     /// <summary>
     /// A class containing many extension methods and extension helpers

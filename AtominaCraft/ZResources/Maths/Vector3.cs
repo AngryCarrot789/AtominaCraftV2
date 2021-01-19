@@ -1,6 +1,6 @@
-﻿using AtominaCraft.Resources.Strings;
+﻿using AtominaCraft.ZResources.Strings;
 
-namespace AtominaCraft.Resources.Maths
+namespace AtominaCraft.ZResources.Maths
 {
     public class Vector3
     {
@@ -9,6 +9,7 @@ namespace AtominaCraft.Resources.Maths
         public float Z { get; set; }
 
         public static Vector3 Zero => new Vector3(0.0f);
+        public static Vector3 Halfs => new Vector3(0.5f);
         public static Vector3 Ones => new Vector3(1.0f);
         public static Vector3 UnitX => new Vector3(1.0f, 0.0f, 0.0f);
         public static Vector3 UnitY => new Vector3(0.0f, 1.0f, 0.0f);

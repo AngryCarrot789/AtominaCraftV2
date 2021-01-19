@@ -1,6 +1,6 @@
 ﻿using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace AtominaCraft.Resources
+namespace AtominaCraft.ZResources
 {
     public static class Inputs
     {

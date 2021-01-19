@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 
-namespace AtominaCraft.Resources
+namespace AtominaCraft.ZResources
 {
     public static class ResourceLocator
     {
         private static string APP_DIRECTORY = "";
-        public const string GRAPHICS_BASE_PATH = "Resources\\Graphics";
+        public const string GRAPHICS_BASE_PATH = "ZResources\\Graphics";
         public const string SHADERS_BASE_PATH = GRAPHICS_BASE_PATH + "\\Shaders";
         public const string MESHES_BASE_PATH = GRAPHICS_BASE_PATH + "\\Meshes";
         public const string TEXTURES_BASE_PATH = GRAPHICS_BASE_PATH + "\\Textures";

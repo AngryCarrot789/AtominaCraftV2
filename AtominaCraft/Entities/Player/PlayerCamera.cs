@@ -1,5 +1,5 @@
-﻿using AtominaCraft.Resources;
-using AtominaCraft.Resources.Maths;
+﻿using AtominaCraft.ZResources;
+using AtominaCraft.ZResources.Maths;
 using OpenTK.Graphics.OpenGL;
 
 namespace AtominaCraft.Entities.Player

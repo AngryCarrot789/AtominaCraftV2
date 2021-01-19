@@ -1,8 +1,8 @@
-﻿using AtominaCraft.Logging;
+﻿using AtominaCraft.ZResources.Logging;
 using System.Collections.Generic;
 using System.IO;
 
-namespace AtominaCraft.Resources.Graphics
+namespace AtominaCraft.ZResources.Graphics
 {
     public static class Graphics
     {

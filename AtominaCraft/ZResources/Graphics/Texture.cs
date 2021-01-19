@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
 
-namespace AtominaCraft.Resources.Graphics
+namespace AtominaCraft.ZResources.Graphics
 {
     public class Texture : IDisposable
     {

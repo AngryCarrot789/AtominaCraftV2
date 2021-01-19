@@ -1,5 +1,6 @@
-﻿using AtominaCraft.Collision;
-using AtominaCraft.Resources.Maths;
+﻿using AtominaCraft.BlockGrid;
+using AtominaCraft.Collision;
+using AtominaCraft.ZResources.Maths;
 
 namespace AtominaCraft.Blocks
 {
@@ -10,7 +11,6 @@ namespace AtominaCraft.Blocks
         public float Resistance { get; set; }
 
         public AxisAlignedBB BoundingBox { get; set; }
-
-        public Vector3 Location { get; set; }
+        public BlockLocation Location { get; set; }
     }
 }

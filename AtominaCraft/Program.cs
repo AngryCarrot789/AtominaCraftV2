@@ -1,5 +1,5 @@
-using AtominaCraft.Resources;
-using AtominaCraft.Resources.Windows;
+using AtominaCraft.ZResources;
+using AtominaCraft.ZResources.Windows;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;

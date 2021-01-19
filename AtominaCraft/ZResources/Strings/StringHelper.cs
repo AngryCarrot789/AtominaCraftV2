@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtominaCraft.Resources.Strings
+namespace AtominaCraft.ZResources.Strings
 {
     public static class StringHelper
     {

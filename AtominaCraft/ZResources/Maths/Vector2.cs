@@ -1,6 +1,6 @@
-﻿using AtominaCraft.Resources.Strings;
+﻿using AtominaCraft.ZResources.Strings;
 
-namespace AtominaCraft.Resources.Maths
+namespace AtominaCraft.ZResources.Maths
 {
     public class Vector2
     {
