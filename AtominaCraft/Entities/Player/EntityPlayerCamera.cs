@@ -1,4 +1,5 @@
-﻿using AtominaCraft.ZResources;
+﻿using AtominaCraft.Collision;
+using AtominaCraft.ZResources;
 using AtominaCraft.ZResources.Maths;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -16,6 +17,7 @@ namespace AtominaCraft.Entities.Player
         public EntityPlayerCamera()
         {
             Camera = new PlayerCamera();
+            BoundingBox.Shrink(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f);
         }
 
         public Matrix4 WorldToCamera()

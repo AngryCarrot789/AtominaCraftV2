@@ -36,5 +36,10 @@ namespace AtominaCraft.BlockGrid
             vector.Y = Y;
             vector.Z = Z;
         }
+
+        public override int GetHashCode()
+        {
+            return X + Y + Z;
+        }
     }
 }

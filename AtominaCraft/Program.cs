@@ -19,7 +19,7 @@ namespace AtominaCraft
 
             GameWindowSettings gws = GameWindowSettings.Default;
             gws.IsMultiThreaded = false;
-            gws.UpdateFrequency = 500;
+            gws.UpdateFrequency = 400;
             gws.RenderFrequency = 100;
 
             NativeWindowSettings nws = NativeWindowSettings.Default;

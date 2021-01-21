@@ -1,6 +1,7 @@
 ﻿using AtominaCraft.Collision;
 using AtominaCraft.ZResources.Maths;
 using AtominaCraft.Worlds;
+using System.ComponentModel.DataAnnotations;
 
 namespace AtominaCraft.Entities
 {
@@ -30,20 +31,34 @@ namespace AtominaCraft.Entities
 
         public Entity()
         {
-            Position = new Vector3(0, 0, 0);
             PreviousPosition = new Vector3();
+            Position = new Vector3(0, 0, 0);
             LastTickPosition = new Vector3();
             Velocity = new Vector3();
             Rotation = new Vector3();
             Scale = new Vector3(1, 1, 1);
-            BoundingBox = new AxisAlignedBB();
+            BoundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
         }
 
         public virtual void Update()
         {
-            PreviousPosition.Set(Position);
             Velocity *= 0.98f;
-            Position += Velocity * Delta.Time;
+            MoveTo(Position + (Velocity * Delta.Time));
+        }
+
+        public void UpdateAABBPosition()
+        {
+            float differenceX = Position.X - PreviousPosition.X;
+            float differenceY = Position.Y - PreviousPosition.Y;
+            float differenceZ = Position.Z - PreviousPosition.Z;
+            BoundingBox.Move(differenceX, differenceY, differenceZ);
+        }
+
+        public void MoveTo(Vector3 newPos)
+        {
+            PreviousPosition.Set(Position);
+            Position = newPos;
+            UpdateAABBPosition();
         }
     }
 }

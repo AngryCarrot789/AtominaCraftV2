@@ -15,6 +15,13 @@ namespace AtominaCraft.ZResources.Maths
         public static Vector3 UnitY => new Vector3(0.0f, 1.0f, 0.0f);
         public static Vector3 UnitZ => new Vector3(0.0f, 0.0f, 1.0f);
 
+        public static Vector3 Up        => new Vector3( 0,  1,  0);
+        public static Vector3 Down      => new Vector3( 0, -1,  0);
+        public static Vector3 Left      => new Vector3( 1,  0,  0);
+        public static Vector3 Right     => new Vector3(-1,  0,  0);
+        public static Vector3 Backward  => new Vector3( 0,  0,  1);
+        public static Vector3 Forward   => new Vector3( 0,  0, -1);
+
         public Vector3() { Set(0.0f, 0.0f, 0.0f); }
 
         public Vector3(float a)

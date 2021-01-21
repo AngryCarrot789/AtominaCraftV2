@@ -15,6 +15,8 @@ using System.Windows.Forms;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.Blocks;
+using AtominaCraft.Blocks.Rendering;
+using AtominaCraft.ZResources.Windows;
 
 namespace AtominaCraft
 {
@@ -27,6 +29,7 @@ namespace AtominaCraft
         public EntityPlayerCamera Player { get; set; }
 
         public bool IsRunning { get; set; }
+        public bool DrawDebug { get; set; }
 
         public AtominaCraft(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) :
             base(gameWindowSettings, nativeWindowSettings)
@@ -41,7 +44,6 @@ namespace AtominaCraft
             LogManager.Initialise();
             if (InitialiseOpenGL())
             {
-                Graphics.Initialise();
                 DebugDraw.Initialise();
 
                 LogManager.OpenGLLogger.Log("Successfully initialised Game Engine");
@@ -93,16 +95,7 @@ namespace AtominaCraft
             // Called just after OpenGL is initialised
             DebugText.CanWrite = true;
 
-            try
-            {
-                Graphics.Initialise();
-                Graphics.Load();
-            }
-            catch (Exception exception)
-            {
-                CrashReport start = new CrashReport(exception, "Graphics Loader", "Exception after trying to load meshes/shaders/textures");
-                throw exception;
-            }
+            BlockTextureLinker.LoadTextures();
 
             // Initialise Game
 
@@ -111,8 +104,10 @@ namespace AtominaCraft
             Worlds = new List<World>();
             World earth = new World();
             earth.MainPlayer = Player;
+            Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(1, 1), 5);
+            earth.Chunks.Add(chunk.Location, chunk);
             Player.World = earth;
-            Player.Position.Set(0, 0, 3);
+            Player.MoveTo(new Vector3(0, 0, 3));
             Worlds.Add(earth);
 
             Inputs.Keyboard = KeyboardState;
@@ -128,16 +123,15 @@ namespace AtominaCraft
         {
             try
             {
-                // Calculate delta time
-
-                DebugText.Clear(true);
-
-                //Mouse.UpdateMousePosition();
-
                 if (KeyboardState.IsKeyDown(Keys.Escape))
                 {
                     this.Close();
                     Application.Exit();
+                }
+
+                if (KeyboardState.IsKeyPressed(Keys.F3))
+                {
+                    DrawDebug = !DrawDebug;
                 }
 
                 Player.World.Update();
@@ -155,6 +149,7 @@ namespace AtominaCraft
 
         public void RenderGame()
         {
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
 
@@ -163,14 +158,21 @@ namespace AtominaCraft
             Player.Camera.UseViewport();
 
             Vector3 position = new Vector3();
-            foreach(Chunk chunk in Player.World.Chunks)
+            foreach (Chunk chunk in Player.World.Chunks.Values)
             {
-                foreach(Block block in chunk.Blocks)
+                foreach (Block block in chunk.Blocks.Values)
                 {
                     block.Location.Extract(position);
-                    DebugDraw.DrawCube(Player.Camera, position, Vector3.Halfs);
+                    BlockRenderer.DrawBlock(block, Player.Camera);
                 }
             }
+
+            DebugText.Clear();
+            DebugText.WriteLine($"Player Position: {Player.Position}");
+            DebugText.WriteLine($"Player Look:     X: {Player.CameraRotationX}, Y: {Player.CameraRotationY}");
+            DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
+
+            DebugDraw.DrawXYZ(Player.Camera.Projection, Player.CameraRotationY, Player.CameraRotationX);
 
             Context.SwapBuffers();
         }

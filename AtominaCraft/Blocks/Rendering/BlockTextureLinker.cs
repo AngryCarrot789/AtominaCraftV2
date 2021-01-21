@@ -1,42 +1,38 @@
-﻿using AtominaCraft.ZResources.Logging;
+﻿using AtominaCraft.ZResources;
+using AtominaCraft.ZResources.Graphics;
+using OpenTK.Graphics.ES11;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
-namespace AtominaCraft.ZResources.Graphics
+namespace AtominaCraft.Blocks.Rendering
 {
-    public static class Graphics
+    public static class BlockTextureLinker
     {
-        private static Dictionary<string, Mesh> Meshes { get; set; }
+        public static Dictionary<string, Texture> TextureMap { get; set; }
+        public static Mesh Cube { get; set; }
         public static Shader TextureShader { get; set; }
         public static Shader PinkShader { get; set; }
-        private static Dictionary<string, Texture> Textures { get; set; }
 
-        public static void Initialise()
+        public static string GetTextureNameFromID(int id)
         {
-            Meshes = new Dictionary<string, Mesh>();
-            Textures = new Dictionary<string, Texture>();
-        }
-
-        public static bool GetMesh(string name, out Mesh mesh)
-        {
-            return Meshes.TryGetValue(name, out mesh);
-        }
-
-        public static bool GetTexture(string name, out Texture texture)
-        {
-            return Textures.TryGetValue(name, out texture);
-        }
-
-        public static void Load()
-        {
-            LogManager.GraphicsLogger.Log("Loading meshes");
-            foreach (string meshFile in Directory.GetFiles(ResourceLocator.GetMeshesDirectory()))
+            switch (id)
             {
-                Meshes.Add(Path.GetFileNameWithoutExtension(meshFile), new Mesh(meshFile));
+                case (int)TextureTypes.Air: return "white";
+                case (int)TextureTypes.Gold: return "gold";
+                case (int)TextureTypes.Electromagnet: return "electromagnet";
+                case (int)TextureTypes.Dirt: return "dirt";
             }
-            LogManager.GraphicsLogger.Log("Successfully loaded meshes");
 
-            LogManager.GraphicsLogger.Log("Loading Shaders");
+            return "";
+        }
+
+        public static void LoadTextures()
+        {
+            TextureMap = new Dictionary<string, Texture>();
+
+            Cube = new Mesh(Path.Combine(ResourceLocator.GetMeshesDirectory(), "cube.obj"));
 
             string textureV =
                 "#version 460\n" +
@@ -82,17 +78,10 @@ namespace AtominaCraft.ZResources.Graphics
 
             PinkShader = new Shader(vertexShader, fragmentShader);
 
-            LogManager.GraphicsLogger.Log("Successfully loaded shaders");
-
-            LogManager.GraphicsLogger.Log("Loading textures");
             foreach (string textureFile in Directory.GetFiles(ResourceLocator.GetTexturesDirectory()))
             {
-                Textures.Add(Path.GetFileNameWithoutExtension(textureFile), new Texture(textureFile, 0, 0));
+                TextureMap.Add(Path.GetFileNameWithoutExtension(textureFile), new Texture(textureFile, 0, 0));
             }
-            LogManager.GraphicsLogger.Log("Successfully loaded textures");
-
-            LogManager.GraphicsLogger.Log($"Loaded {Meshes.Count} meshes");
-            LogManager.GraphicsLogger.Log($"Loaded {Textures.Count} textures");
         }
     }
 }

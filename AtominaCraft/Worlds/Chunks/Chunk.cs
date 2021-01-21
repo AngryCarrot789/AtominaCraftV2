@@ -1,20 +1,21 @@
-﻿using AtominaCraft.Blocks;
+﻿using AtominaCraft.BlockGrid;
+using AtominaCraft.Blocks;
 using AtominaCraft.ZResources.Maths;
 using System.Collections.Generic;
+using System.Security.Policy;
 
 namespace AtominaCraft.Worlds.Chunks
 {
     public class Chunk
     {
-        public Vector2 Location { get; set; }
-
+        public ChunkLocation Location { get; set; }
         public World World { get; set; }
 
-        public List<Block> Blocks { get; set; }
+        public Dictionary<BlockLocation, Block> Blocks { get; set; }
 
-        public Chunk(World world, Vector2 location)
+        public Chunk(World world, ChunkLocation location)
         {
-            Blocks = new List<Block>();
+            Blocks = new Dictionary<BlockLocation, Block>();
             Location = location;
             World = world;
         }
@@ -22,6 +23,17 @@ namespace AtominaCraft.Worlds.Chunks
         public void Update()
         {
 
+        }
+
+        public Block GetBlockAt(int x, int y, int z)
+        {
+            return GetBlockAt(new BlockLocation(x, y, z));
+        }
+
+        public Block GetBlockAt(BlockLocation location)
+        {
+            Blocks.TryGetValue(location, out Block block);
+            return block;
         }
     }
 }

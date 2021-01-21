@@ -14,6 +14,13 @@ namespace AtominaCraft.ZResources.Graphics
         public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
 
+        public GameObject()
+        {
+            Position = new Vector3(0, 0, 0);
+            Scale = Vector3.Halfs;
+            Rotation = Vector3.Zero;
+        }
+
         public void Draw(PlayerCamera camera)
         {
             Matrix4 mv = WorldToLocal().Transposed();

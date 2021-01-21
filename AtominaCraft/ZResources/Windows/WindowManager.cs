@@ -30,6 +30,9 @@ namespace AtominaCraft.ZResources.Windows
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             HasInitialised = true;
+            DebugText.Window = new DebugWindow();
+            DebugText.CanWrite = true;
+            DebugText.Window.Show();
             Application.Run();
         }
     }
