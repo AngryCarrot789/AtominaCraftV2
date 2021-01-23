@@ -34,7 +34,7 @@ namespace AtominaCraft.ZResources.Graphics
             GL.DepthFunc(DepthFunction.Lequal);
             GL.UseProgram(0);
 
-			GL.LineWidth(4);
+			GL.LineWidth(2);
 
 			GL.Color3(r, g, b);
 			GL.Begin(PrimitiveType.LineLoop);

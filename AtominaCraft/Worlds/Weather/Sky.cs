@@ -16,18 +16,18 @@ namespace AtominaCraft.Worlds.Weather
         public Sky()
         {
             SkyQuad = GraphicsLoader.Quad;
-            SkyShader = GraphicsLoader.SkyShader;
+            //SkyShader = GraphicsLoader.SkyShader;
         }
 
         public void Draw(PlayerCamera camera)
         {
-            GL.DepthMask(false);
-            Matrix4 mvp = camera.Projection.Inverse();
-            Matrix4 mv = camera.WorldView.Inverse();
-            SkyShader.Use();
-            SkyShader.SetMatrix(mvp, mv);
-            SkyQuad.Draw();
-            GL.DepthMask(true);
+            //GL.DepthMask(false);
+            //Matrix4 mvp = camera.Projection.Inverse();
+            //Matrix4 mv = camera.WorldView.Inverse();
+            //SkyShader.Use();
+            //SkyShader.SetMatrix(mvp, mv);
+            //SkyQuad.Draw();
+            //GL.DepthMask(true);
         }
     }
 }

@@ -9,6 +9,9 @@ namespace AtominaCraft.ZResources.Maths
         public float Z { get; set; }
 
         public static Vector3 Zero => new Vector3(0.0f);
+        /// <summary>
+        /// The size of a block
+        /// </summary>
         public static Vector3 Halfs => new Vector3(0.5f);
         public static Vector3 Ones => new Vector3(1.0f);
         public static Vector3 UnitX => new Vector3(1.0f, 0.0f, 0.0f);

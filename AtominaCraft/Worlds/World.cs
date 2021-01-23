@@ -11,14 +11,14 @@ namespace AtominaCraft.Worlds
 {
     public class World
     {
-        public Sky Sky { get; set; }
+        //public Sky Sky { get; set; }
         public EntityPlayerCamera MainPlayer { get; set; }
 
         public Dictionary<ChunkLocation, Chunk> Chunks { get; set; }
 
         public World()
         {
-            Sky = new Sky();
+            //Sky = new Sky();
             Chunks = new Dictionary<ChunkLocation, Chunk>();
         }
 

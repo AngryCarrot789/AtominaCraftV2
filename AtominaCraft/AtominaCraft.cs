@@ -18,6 +18,7 @@ using AtominaCraft.Blocks;
 using AtominaCraft.Blocks.Rendering;
 using AtominaCraft.ZResources.Windows;
 using AtominaCraft.Worlds.Chunks.Rendering;
+using AtominaCraft.BlockGrid;
 
 namespace AtominaCraft
 {
@@ -154,11 +155,8 @@ namespace AtominaCraft
 
         public void RenderGame()
         {
-
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            Player.World.Sky.Draw(Player.Camera);
-            GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f); 
 
             Player.Camera.WorldView = Player.WorldToCamera();
             Player.Camera.SetSize(Size.X, Size.Y, GameSettings.RENDER_NEAR_MIN, GameSettings.RENDER_FAR, GameSettings.RENDER_FOV);
@@ -175,6 +173,7 @@ namespace AtominaCraft
                 foreach (Block block in chunk.Blocks.Values)
                 {
                     block.Location.Extract(position);
+                    DebugDraw.DrawCube(Player.Camera, GridLatch.GetBlockWorldSpace(block.Location), Vector3.Halfs);
                     BlockRenderer.DrawBlock(block, Player.Camera);
                 }
             }
@@ -183,7 +182,6 @@ namespace AtominaCraft
             DebugText.WriteLine($"Player Position: {Player.Position}");
             DebugText.WriteLine($"Player Look:     X: {Player.CameraRotationX}, Y: {Player.CameraRotationY}");
             DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
-
             DebugDraw.DrawXYZ(Player.Camera.Projection, Player.CameraRotationY, Player.CameraRotationX);
 
             Context.SwapBuffers();

@@ -22,8 +22,8 @@ namespace AtominaCraft.Blocks
         public static void DrawBlock(Block block, PlayerCamera camera)
         {
             string textureName = BlockTextureLinker.GetTextureNameFromID(block.ID);
-
             BlockTextureLinker.TextureMap.TryGetValue(textureName, out Texture texture);
+
             Cube.Texture = texture;
             Cube.Position = GridLatch.GetBlockWorldSpace(block.Location);
             Cube.Draw(camera);
