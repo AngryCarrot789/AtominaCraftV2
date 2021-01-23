@@ -11,7 +11,7 @@ namespace AtominaCraft.ZResources.Graphics
     public class Mesh : IDisposable
     {
         /// <summary>
-        /// Stores the number of vertex buffer objects. Vertex, UV/Textures, Noramsl
+        /// The number of vertex buffer objects. Vertex, UV/Textures, and Normals
         /// </summary>
         public const int VBO_COUNT = 3;
 
@@ -19,6 +19,7 @@ namespace AtominaCraft.ZResources.Graphics
         /// Stores an ID to the vertex arrays object (the object contains all the buffers)
         /// </summary>
         public int VAO { get; set; }
+
         /// <summary>
         /// Contains IDs to the vertex buffers within the VAO
         /// </summary>
@@ -40,8 +41,9 @@ namespace AtominaCraft.ZResources.Graphics
         public string MeshName { get; set; }
 
         /// <summary>
-        /// Ignore for now, but this would be used for putting textures 
-        /// over shapes, like a texture of earth over a Globe. or a trianGle. #earthisatrianGle
+        /// This would be used for putting textures over shapes, like a texture of 
+        /// earth over a Globe. or a trianGle. #earthisatrianGle
+        /// And is also used for the sky cube thingy
         /// </summary>
         public bool Is3DTexture { get; set; }
 
@@ -67,11 +69,58 @@ namespace AtominaCraft.ZResources.Graphics
             }
         }
 
+        public Mesh(List<float> vertices, List<float> uvs)
+        {
+            Vertices = vertices;
+            UVs = uvs;
+            Normals = new List<float>(vertices.Count);
+            VBOs = new int[VBO_COUNT];
+
+            // generate normals
+            for (int i = 0; i < vertices.Count; i += 3)
+            {
+                float vertex = vertices[i];
+                Vector3 vertex1 = new Vector3(vertices[i + 0]);
+                Vector3 vertex2 = new Vector3(vertices[i + 1]);
+                Vector3 vertex3 = new Vector3(vertices[i + 2]);
+                Vector3 normals = (vertex2 - vertex1).Cross(vertex3 - vertex1).Normalised();
+                Normals.Add(normals.X);
+                Normals.Add(normals.Y);
+                Normals.Add(normals.Z);
+            }
+
+            // Generate vertex array object
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
+
+            // Generate vertex buffer objects
+            VBOs[0] = GL.GenBuffer();
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[0]);
+                GL.BufferData(BufferTarget.ArrayBuffer, Vertices.Count * sizeof(float), Vertices.ToArray(), BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(0);
+                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            }
+            // Generate texture buffer
+            VBOs[1] = GL.GenBuffer();
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[1]);
+                GL.BufferData(BufferTarget.ArrayBuffer, UVs.Count * sizeof(float), UVs.ToArray(), BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(1);
+                GL.VertexAttribPointer(1, (Is3DTexture ? 3 : 2), VertexAttribPointerType.Float, false, 0, 0);
+            }
+            // Generate normals buffer
+            VBOs[2] = GL.GenBuffer();
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[2]);
+                GL.BufferData(BufferTarget.ArrayBuffer, Normals.Count * sizeof(float), Normals.ToArray(), BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(2);
+                GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
+            }
+        }
+
         public Mesh(string fileName)
         {
-            Vertices = new List<float>();
-            UVs = new List<float>();
-            Normals = new List<float>();
             LoadMesh(fileName);
         }
 
@@ -86,9 +135,6 @@ namespace AtominaCraft.ZResources.Graphics
             Normals = new List<float>();
             VBOs = new int[VBO_COUNT];
 
-            List<float> vertPalette = new List<float>();
-            List<float> uvPalette = new List<float>();
-
             if (!File.Exists(meshFilePath))
             {
                 LogManager.GraphicsLogger.Log($"Mesh doesnt exist: {meshFilePath}");
@@ -96,6 +142,10 @@ namespace AtominaCraft.ZResources.Graphics
             else
             {
                 MeshName = Path.GetFileNameWithoutExtension(meshFilePath);
+
+                List<float> vertPalette = new List<float>();
+                List<float> uvPalette = new List<float>();
+
                 string[] meshContents = File.ReadAllLines(meshFilePath);
                 foreach (string line in meshContents)
                 {
@@ -119,11 +169,13 @@ namespace AtominaCraft.ZResources.Graphics
                     {
                         // this should only be 2 long, the array
                         float[] uvs = line.Extract(3).Split(' ').Tofloats();
-                        foreach (float uvCoordinate in uvs)
+                        uvPalette.Add(uvs[0]);
+                        uvPalette.Add(uvs[1]);
+                        if (uvs.Length > 2)
                         {
-                            uvPalette.Add(uvCoordinate);
+                            uvPalette.Add(uvs[2]);
+                            Is3DTexture = true;
                         }
-                        //Is3DTexture = true;
                     }
 
                     // Colliders
@@ -274,10 +326,10 @@ namespace AtominaCraft.ZResources.Graphics
 
                         else continue;
 
-                        AddFace(vertPalette, uvPalette, a, at, b, bt, c, ct);
+                        AddFace(vertPalette, uvPalette, a, at, b, bt, c, ct, Is3DTexture);
                         if (isQuad)
                         {
-                            AddFace(vertPalette, uvPalette, c, ct, d, dt, a, at);
+                            AddFace(vertPalette, uvPalette, c, ct, d, dt, a, at, Is3DTexture);
                         }
                     }
                 }
@@ -344,7 +396,7 @@ namespace AtominaCraft.ZResources.Graphics
         /// <param name="z" >vertex z position</param>
         /// <param name="zT">texture z position</param>
         /// <param name="is3dTexture">says whether the face will have a 3d texture</param>
-        public void AddFace(List<float> vertPalette, List<float> uvPalette, int x, int xT, int y, int yT, int z, int zT, bool is3dTexture = false)
+        public void AddFace(List<float> vertPalette, List<float> uvPalette, int x, int xT, int y, int yT, int z, int zT, bool is3dTexture)
         {
             if (x > 0 && y > 0 && z > 0)
             {
@@ -365,31 +417,26 @@ namespace AtominaCraft.ZResources.Graphics
                         int vt = uvIx[i];
                         if (v < (vertPalette.Count / 3))
                         {
-                            float verts1 = vertPalette[(v * 3)];
-                            float verts2 = vertPalette[(v * 3) + 1];
-                            float verts3 = vertPalette[(v * 3) + 2];
-                            Vertices.Add(verts1);
-                            Vertices.Add(verts2);
-                            Vertices.Add(verts3);
+                            Vertices.Add(vertPalette[v * 3]);
+                            Vertices.Add(vertPalette[v * 3 + 1]);
+                            Vertices.Add(vertPalette[v * 3 + 2]);
                             if (uvPalette.Count > 0)
                             {
                                 if (is3dTexture)
                                 {
                                     if (vt < (uvPalette.Count / 3))
                                     {
-                                        UVs.Add(uvPalette[(vt * 3)]);
-                                        UVs.Add(uvPalette[(vt * 3) + 1]);
-                                        UVs.Add(uvPalette[(vt * 3) + 2]);
+                                        UVs.Add(uvPalette[vt * 3]);
+                                        UVs.Add(uvPalette[vt * 3 + 1]);
+                                        UVs.Add(uvPalette[vt * 3 + 2]);
                                     }
                                 }
                                 else
                                 {
                                     if (vt < (uvPalette.Count / 2))
                                     {
-                                        float uv1 = uvPalette[(vt * 2)];
-                                        float uv2 = uvPalette[(vt * 2) + 1];
-                                        UVs.Add(uv1);
-                                        UVs.Add(uv2);
+                                        UVs.Add(uvPalette[vt * 2]);
+                                        UVs.Add(uvPalette[vt * 2 + 1]);
                                     }
                                 }
                             }

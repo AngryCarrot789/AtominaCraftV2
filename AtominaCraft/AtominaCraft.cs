@@ -17,6 +17,7 @@ using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.Blocks;
 using AtominaCraft.Blocks.Rendering;
 using AtominaCraft.ZResources.Windows;
+using AtominaCraft.Worlds.Chunks.Rendering;
 
 namespace AtominaCraft
 {
@@ -95,19 +96,23 @@ namespace AtominaCraft
             // Called just after OpenGL is initialised
             DebugText.CanWrite = true;
 
-            BlockTextureLinker.LoadTextures();
+            GraphicsLoader.Load();
 
             // Initialise Game
 
-            Player = new EntityPlayerCamera();
+            //BlockMesh.Generate();
+            //ChunkMeshGenerator.Initialise();
 
+            Player = new EntityPlayerCamera();
             Worlds = new List<World>();
+
             World earth = new World();
-            earth.MainPlayer = Player;
-            Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(1, 1), 5);
-            earth.Chunks.Add(chunk.Location, chunk);
-            Player.World = earth;
+            earth.SetMainPlayer(Player);
             Player.MoveTo(new Vector3(0, 0, 3));
+
+            Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(1, 1), 6);
+            //ChunkMeshGenerator.GenerateChunk(chunk);
+            earth.Chunks.Add(chunk.Location, chunk);
             Worlds.Add(earth);
 
             Inputs.Keyboard = KeyboardState;
@@ -150,7 +155,9 @@ namespace AtominaCraft
         public void RenderGame()
         {
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            Player.World.Sky.Draw(Player.Camera);
             GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
 
             Player.Camera.WorldView = Player.WorldToCamera();
@@ -160,6 +167,11 @@ namespace AtominaCraft
             Vector3 position = new Vector3();
             foreach (Chunk chunk in Player.World.Chunks.Values)
             {
+                //ChunkMesh mesh = ChunkMeshGenerator.GetMesh(chunk);
+                //if (mesh != null)
+                //{
+                //    mesh.Draw(Player.Camera);
+                //}
                 foreach (Block block in chunk.Blocks.Values)
                 {
                     block.Location.Extract(position);

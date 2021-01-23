@@ -37,6 +37,11 @@ namespace AtominaCraft.BlockGrid
             vector.Z = Z;
         }
 
+        public BlockLocation Translated(int x, int y, int z)
+        {
+            return new BlockLocation(X + x, Y + y, Z + z);
+        }
+
         public override int GetHashCode()
         {
             return X + Y + Z;

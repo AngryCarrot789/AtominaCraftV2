@@ -15,8 +15,8 @@ namespace AtominaCraft.Blocks
         static BlockRenderer()
         {
             Cube = new GameObject();
-            Cube.Shader = BlockTextureLinker.TextureShader;
-            Cube.Mesh = BlockTextureLinker.Cube;
+            Cube.Shader = GraphicsLoader.TextureShader;
+            Cube.Mesh = GraphicsLoader.Cube;
         }
 
         public static void DrawBlock(Block block, PlayerCamera camera)

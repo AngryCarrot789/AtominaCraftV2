@@ -2,6 +2,7 @@
 using AtominaCraft.Blocks;
 using AtominaCraft.Entities.Player;
 using AtominaCraft.Worlds.Chunks;
+using AtominaCraft.Worlds.Weather;
 using AtominaCraft.ZResources.Graphics;
 using AtominaCraft.ZResources.Maths;
 using System.Collections.Generic;
@@ -10,12 +11,14 @@ namespace AtominaCraft.Worlds
 {
     public class World
     {
+        public Sky Sky { get; set; }
         public EntityPlayerCamera MainPlayer { get; set; }
 
         public Dictionary<ChunkLocation, Chunk> Chunks { get; set; }
 
         public World()
         {
+            Sky = new Sky();
             Chunks = new Dictionary<ChunkLocation, Chunk>();
         }
 
@@ -37,6 +40,12 @@ namespace AtominaCraft.Worlds
         {
             Chunks.TryGetValue(location, out Chunk chunk);
             return chunk;
+        }
+
+        public void SetMainPlayer(EntityPlayerCamera player)
+        {
+            MainPlayer = player;
+            player.World = this;
         }
     }
 }

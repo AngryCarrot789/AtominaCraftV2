@@ -13,6 +13,7 @@ namespace AtominaCraft.Blocks.Rendering
         Gold = 3,
         Dirt = 4,
         Grass = 5,
-        Electromagnet = 6
+        Electromagnet = 6,
+        Glass = 7
     }
 }

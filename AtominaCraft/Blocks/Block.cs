@@ -11,6 +11,7 @@ namespace AtominaCraft.Blocks
         public int ID { get; set; }
         public float Hardness { get; set; }
         public float Resistance { get; set; }
+        public bool IsTransparent { get; set; }
 
         public AxisAlignedBB BoundingBox { get; set; }
         public BlockLocation Location { get; set; }
@@ -21,6 +22,7 @@ namespace AtominaCraft.Blocks
             World = world;
             Location = location;
             ID = id;
+            IsTransparent = ID == ((int)TextureTypes.Air) || ID == ((int)TextureTypes.Glass);
             BoundingBox = new AxisAlignedBB(Location);
         }
     }

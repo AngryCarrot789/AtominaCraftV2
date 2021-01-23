@@ -8,6 +8,9 @@ namespace AtominaCraft.Worlds.Chunks
 {
     public class Chunk
     {
+        public const int Height = 256;
+        public const int Width = 16;
+
         public ChunkLocation Location { get; set; }
         public World World { get; set; }
 
@@ -32,8 +35,12 @@ namespace AtominaCraft.Worlds.Chunks
 
         public Block GetBlockAt(BlockLocation location)
         {
-            Blocks.TryGetValue(location, out Block block);
-            return block;
+            try
+            {
+                Blocks.TryGetValue(location, out Block block);
+                return block;
+            }
+            catch { return null; }
         }
     }
 }
