@@ -72,6 +72,8 @@ namespace AtominaCraft
                 GL.DepthFunc(DepthFunction.Less);
                 GL.DepthMask(true);
 
+                GraphicsLoader.Load();
+
                 LogManager.OpenGLLogger.Log("Successfully initialised GLFW and OpenGL");
                 return true;
             }
@@ -92,12 +94,12 @@ namespace AtominaCraft
             }
         }
 
+        private GameObject cube;
+
         protected override void OnLoad()
         {
             // Called just after OpenGL is initialised
             DebugText.CanWrite = true;
-
-            GraphicsLoader.Load();
 
             // Initialise Game
 
@@ -121,6 +123,14 @@ namespace AtominaCraft
 
             CursorVisible = false;
             CursorGrabbed = true;
+
+            cube = new GameObject();
+            cube.Mesh = GraphicsLoader.Cube;
+            cube.Shader = GraphicsLoader.TextureShader;
+            cube.Texture = BlockTextureLinker.TextureMap["dirt"];
+            cube.Position = Vector3.Zero;
+            cube.Scale = Vector3.Ones;
+            cube.Rotation = Vector3.Zero;
 
             base.OnLoad();
         }
@@ -177,6 +187,8 @@ namespace AtominaCraft
                     BlockRenderer.DrawBlock(block, Player.Camera);
                 }
             }
+
+            cube.Draw(Player.Camera);
 
             DebugText.Clear();
             DebugText.WriteLine($"Player Position: {Player.Position}");

@@ -43,7 +43,6 @@ namespace AtominaCraft.ZResources.Graphics
                 "uniform sampler2D tex;\n" +
                 "in vec2 ex_uv;\n" +
                 "in vec3 ex_normal;\n" +
-                "out vec4 gl_FragColor;\n" +
                 "void main() {\n" +
                 "  float s = dot(ex_normal, LIGHT)*0.5 + 0.5;\n" +
                 "  gl_FragColor = vec4(texture(tex, ex_uv).rgb * s, 1.0);\n" +
@@ -88,7 +87,6 @@ namespace AtominaCraft.ZResources.Graphics
             //    "#define SUN_SIZE 0.002\n" +
             //    "#define SUN_SHARPNESS 1.0\n" +
             //    "in vec3 ex_normal;\n" +
-            //    "out vec4 gl_FragColor;\n" +
             //    "void main(void) {\n" +
             //    "    vec3 n = normalize(ex_normal);\n" +
             //    "    float h = (1.0 - n.y) * (1.0 - n.y) * 0.5;\n" +
