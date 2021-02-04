@@ -1,4 +1,5 @@
 ﻿using AtominaCraft.BlockGrid;
+using AtominaCraft.Blocks;
 using AtominaCraft.Entities.Player;
 using AtominaCraft.ZResources.Graphics;
 using AtominaCraft.ZResources.Maths;
@@ -28,20 +29,14 @@ namespace AtominaCraft.Collision
             Set(minX, minY, minZ, maxX, maxY, maxZ);
         }
 
-        public AxisAlignedBB(Vector3 pos, Vector3 scale)
-        {
-            Set(pos, scale);
-        }
-
         public AxisAlignedBB(BlockLocation block)
         {
-            Set(block.X + GridLatch.BLOCK_SCALE,
-                block.Y + GridLatch.BLOCK_SCALE,
-                block.Z + GridLatch.BLOCK_SCALE,
+            Set(block.X,
+                block.Y,
+                block.Z,
                 block.X + GridLatch.BLOCK_SIZE,
                 block.Y + GridLatch.BLOCK_SIZE,
-                block.Z + GridLatch.BLOCK_SIZE
-                );
+                block.Z + GridLatch.BLOCK_SIZE);
         }
 
         public void Set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
@@ -52,11 +47,6 @@ namespace AtominaCraft.Collision
             MaxX = maxX;
             MaxY = maxY;
             MaxZ = maxZ;
-        }
-
-        public void Set(Vector3 min, Vector3 max)
-        {
-            Set(min.X, min.Y, min.Z, max.X, max.Y, max.Z);
         }
 
         // scale as in, scales from the center. scale of 1 means the total length == 2
@@ -77,10 +67,10 @@ namespace AtominaCraft.Collision
 
         public Vector3 GetCenter()
         {
-            float sX = (MaxX - MinX) / 2;
-            float sY = (MaxY - MinY) / 2;
-            float sZ = (MaxZ - MinZ) / 2;
-            return new Vector3(MaxX - sX, MaxY - sY, MaxZ - sZ);
+            float scaleX = (MaxX - MinX) / 2;
+            float scaleY = (MaxY - MinY) / 2;
+            float scaleZ = (MaxZ - MinZ) / 2;
+            return new Vector3(MaxX - scaleX, MaxY - scaleY, MaxZ - scaleZ);
         }
 
         public Vector3 GetMinimum()
@@ -145,6 +135,16 @@ namespace AtominaCraft.Collision
             MaxX += maxX;
             MaxY += maxY;
             MaxZ += maxZ;
+        }
+
+        public void Offset(float x, float y, float z)
+        {
+            MinX += x;
+            MaxX += x;
+            MinY += y;
+            MaxY += y;
+            MinZ += z;
+            MaxZ += z;
         }
 
         public static bool IsPointInsideAABB(Vector3 p, AxisAlignedBB b)

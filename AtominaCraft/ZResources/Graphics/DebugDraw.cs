@@ -1,5 +1,7 @@
-﻿using AtominaCraft.Collision;
+﻿using AtominaCraft.BlockGrid;
+using AtominaCraft.Collision;
 using AtominaCraft.Entities.Player;
+using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.ZResources.Maths;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -8,20 +10,29 @@ namespace AtominaCraft.ZResources.Graphics
 {
     public static class DebugDraw
     {
-        public static void Initialise()
+		public static void Initialise()
         {
 
         }
 
-        public static void DrawVertex(Vector4 v)
+        public static void Vertex4(Vector4 v)
         {
             GL.Vertex4(v.X, v.Y, v.Z, v.W);
         }
 
-        public static void DrawCube(PlayerCamera cam, Vector3 pos, Vector3 scale, float r = 0.2f, float g = 0.9f, float b = 0.7f)
+		public static void DrawChunk(PlayerCamera camera, Chunk chunk)
         {
-            Matrix4 mvp = cam.Matrix() * Matrix4.CreateLocalToWorld(pos, Vector3.Zero, scale);
+			DrawCube(camera, GridLatch.WTMGetChunk(chunk.Location), GridLatch.ChunkScale, 1, 0.1f, 0.1f);
+        }
 
+		public static void DrawAABB(PlayerCamera camera, AxisAlignedBB boundingBox)
+		{
+			DrawCube(camera, boundingBox.GetCenter(), boundingBox.GetScale());
+		}
+
+		public static void DrawCube(PlayerCamera cam, Vector3 pos, Vector3 scale, float r = 0.2f, float g = 0.9f, float b = 0.7f)
+        {
+			Matrix4 mvp = cam.Matrix() * Matrix4.CreateLocalToWorld(pos, Vector3.Zero, scale);
             Vector4 v1 = mvp * new Vector4( 1.0f,  1.0f, -1.0f, 1.0f);
             Vector4 v2 = mvp * new Vector4( 1.0f, -1.0f, -1.0f, 1.0f);
             Vector4 v3 = mvp * new Vector4(-1.0f, -1.0f, -1.0f, 1.0f);
@@ -38,31 +49,31 @@ namespace AtominaCraft.ZResources.Graphics
 
 			GL.Color3(r, g, b);
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v1); 
-			DrawVertex(v2); 
-			DrawVertex(v3);
-			DrawVertex(v4); 
+			Vertex4(v1); 
+			Vertex4(v2); 
+			Vertex4(v3);
+			Vertex4(v4); 
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v4);
-			DrawVertex(v5);
-			DrawVertex(v6);
-			DrawVertex(v3);
+			Vertex4(v4);
+			Vertex4(v5);
+			Vertex4(v6);
+			Vertex4(v3);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v6);
-			DrawVertex(v5);
-			DrawVertex(v8);
-			DrawVertex(v7);
+			Vertex4(v6);
+			Vertex4(v5);
+			Vertex4(v8);
+			Vertex4(v7);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v8);
-			DrawVertex(v7);
-			DrawVertex(v2);
-			DrawVertex(v1);
+			Vertex4(v8);
+			Vertex4(v7);
+			Vertex4(v2);
+			Vertex4(v1);
 			GL.End();
 
 			GL.DepthFunc(DepthFunction.Less);
@@ -97,40 +108,40 @@ namespace AtominaCraft.ZResources.Graphics
 
 			GL.Begin(PrimitiveType.LineLoop);
 			GL.Color3(1.0f, 0.0f, 0.0f);
-			DrawVertex(c);
-			DrawVertex(xP);
+			Vertex4(c);
+			Vertex4(xP);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
 			GL.Color3(0.0f, 1.0f, 0.0f);
-			DrawVertex(c);
-			DrawVertex(yP);
+			Vertex4(c);
+			Vertex4(yP);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
 			GL.Color3(0.0f, 0.0f, 1.0f);
-			DrawVertex(c);
-			DrawVertex(zP);
+			Vertex4(c);
+			Vertex4(zP);
 			GL.End();
 
 			// negatives
 
 			GL.Begin(PrimitiveType.LineLoop);
 			GL.Color3(0.5f, 0.0f, 0.0f);
-			DrawVertex(c);
-			DrawVertex(xN);
+			Vertex4(c);
+			Vertex4(xN);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
 			GL.Color3(0.0f, 0.5f, 0.0f);
-			DrawVertex(c);
-			DrawVertex(yN);
+			Vertex4(c);
+			Vertex4(yN);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
 			GL.Color3(0.0f, 0.0f, 0.5f);
-			DrawVertex(c);
-			DrawVertex(zN);
+			Vertex4(c);
+			Vertex4(zN);
 			GL.End();
 
 			Vector4 v1 = worldProjected * new Vector4(1.0f, 1.0f, -1.0f, 1.0f);
@@ -143,41 +154,36 @@ namespace AtominaCraft.ZResources.Graphics
 			Vector4 v8 = worldProjected * new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 			GL.Begin(PrimitiveType.LineLoop);
-			GL.Color3(0.6f, 0.4f, 0.5f);
-			DrawVertex(v1);
-			DrawVertex(v2);
-			DrawVertex(v3);
-			DrawVertex(v4);
+			GL.Color3(0.8f, 0.3f, 0.7f);
+			Vertex4(v1);
+			Vertex4(v2);
+			Vertex4(v3);
+			Vertex4(v4);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v4);
-			DrawVertex(v5);
-			DrawVertex(v6);
-			DrawVertex(v3);
+			Vertex4(v4);
+			Vertex4(v5);
+			Vertex4(v6);
+			Vertex4(v3);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v6);
-			DrawVertex(v5);
-			DrawVertex(v8);
-			DrawVertex(v7);
+			Vertex4(v6);
+			Vertex4(v5);
+			Vertex4(v8);
+			Vertex4(v7);
 			GL.End();
 
 			GL.Begin(PrimitiveType.LineLoop);
-			DrawVertex(v8);
-			DrawVertex(v7);
-			DrawVertex(v2);
-			DrawVertex(v1);
+			Vertex4(v8);
+			Vertex4(v7);
+			Vertex4(v2);
+			Vertex4(v1);
 			GL.End();
 
 			GL.DepthFunc(DepthFunction.Lequal);
 			GL.LineWidth(1);
 		}
-
-        public static void DrawAABB(PlayerCamera camera, AxisAlignedBB boundingBox)
-        {
-			DrawCube(camera, boundingBox.GetCenter(), boundingBox.GetScale());
-        }
     }
 }

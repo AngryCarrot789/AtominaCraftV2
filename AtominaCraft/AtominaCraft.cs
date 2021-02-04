@@ -11,14 +11,9 @@ using System;
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using System.Windows.Forms;
-using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 using AtominaCraft.Worlds.Chunks;
-using AtominaCraft.Blocks;
-using AtominaCraft.Blocks.Rendering;
 using AtominaCraft.ZResources.Windows;
-using AtominaCraft.Worlds.Chunks.Rendering;
-using AtominaCraft.BlockGrid;
+using Forms = System.Windows.Forms;
 
 namespace AtominaCraft
 {
@@ -93,9 +88,7 @@ namespace AtominaCraft
                 base.Run();
             }
         }
-
-        private GameObject cube;
-
+        //ChunkMesh mesh;
         protected override void OnLoad()
         {
             // Called just after OpenGL is initialised
@@ -109,16 +102,32 @@ namespace AtominaCraft
             Player = new EntityPlayerCamera();
             Worlds = new List<World>();
 
-
             World earth = new World();
             earth.SetMainPlayer(Player);
-            Player.MoveTo(new Vector3(0, 0, 3));
+            Player.MoveTo(new Vector3(0, 5, 0));
 
-            Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(0, 0), 6);
-            Player.Chunk = chunk;
+            //Tesselator.Generate();
+            //mesh = Tesselator.GenerateChunk(chunk1);
+
+            //Chunk chunk1 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(-1, -1), 4);
+            //Chunk chunk2 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(-1,  0), 3);
+            //Chunk chunk3 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0, -1), 2);
+            //Chunk chunk4 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0,  0), 1);
+
+            for(int x = -1, total = 1; x <= 1; x++, total++)
+            {
+                for (int z = 0; z <= 1; z++)
+                {
+                    Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(x, z), total);
+                    earth.Chunks.Add(chunk.Location, chunk);
+                }
+            }
 
             //ChunkMeshGenerator.GenerateChunk(chunk);
-            earth.Chunks.Add(chunk.Location, chunk);
+            //earth.Chunks.Add(chunk1.Location, chunk1);
+            //earth.Chunks.Add(chunk2.Location, chunk2);
+            //earth.Chunks.Add(chunk3.Location, chunk3);
+            //earth.Chunks.Add(chunk4.Location, chunk4);
             Worlds.Add(earth);
 
             Inputs.Keyboard = KeyboardState;
@@ -127,16 +136,6 @@ namespace AtominaCraft
             CursorVisible = false;
             CursorGrabbed = true;
 
-            cube = new GameObject();
-            cube.Mesh = GraphicsLoader.Cube;
-            cube.Shader = GraphicsLoader.TextureShader;
-            cube.Texture = BlockTextureLinker.TextureMap["dirt"];
-            cube.Position = Vector3.Zero;
-            cube.Scale = Vector3.Ones;
-            cube.Rotation = Vector3.Zero;
-
-            chunk.GetBlockAt(15, 5, 15).ID = 0;
-
             base.OnLoad();
         }
 
@@ -144,12 +143,10 @@ namespace AtominaCraft
         {
             try
             {
-                //Block test = Player.Chunk.GetBlockAt(16, 3, 16);
-                //test.ID = 0;
                 if (KeyboardState.IsKeyDown(Keys.Escape))
                 {
                     this.Close();
-                    Application.Exit();
+                    Forms.Application.Exit();
                 }
 
                 if (KeyboardState.IsKeyPressed(Keys.F3))
@@ -157,10 +154,13 @@ namespace AtominaCraft
                     DrawDebug = !DrawDebug;
                 }
 
+                if (KeyboardState.IsKeyPressed(Keys.E))
+                {
+                    CursorVisible = true;
+                    CursorGrabbed = false;
+                }
+
                 Player.World.Update();
-
-                //Mouse.EndFrame();
-
             }
             catch (Exception exception)
             {
@@ -179,26 +179,19 @@ namespace AtominaCraft
             Player.Camera.SetSize(Size.X, Size.Y, GameSettings.RENDER_NEAR_MIN, GameSettings.RENDER_FAR, GameSettings.RENDER_FOV);
             Player.Camera.UseViewport();
 
-            Vector3 position = new Vector3();
+           // mesh.Draw(Player.Camera);
+
+            // less harsh on the GC than creating 100s of vectors every second
             foreach (Chunk chunk in Player.World.Chunks.Values)
             {
-                foreach (Block block in chunk.Blocks.Values)
-                {
-                    if (!block.IsEmpty())
-                    {
-                        block.Location.Extract(position);
-                        //DebugDraw.DrawCube(Player.Camera, GridLatch.GetBlockWorldSpace(block.Location), Vector3.Halfs);
-                        BlockRenderer.DrawBlock(block, Player.Camera);
-                    }
-                }
+                Tesselator.DrawChunkBBB(Player.Camera, chunk);
+                DebugDraw.DrawChunk(Player.Camera, chunk);
             }
 
-            cube.Draw(Player.Camera);
-
-            DebugText.Clear();
-            DebugText.WriteLine($"Player Position: {Player.Position}");
-            DebugText.WriteLine($"Player Look:     X: {Player.CameraRotationX}, Y: {Player.CameraRotationY}");
-            DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
+            //DebugText.Clear();
+            //DebugText.WriteLine($"Player Position: {Player.Position}");
+            //DebugText.WriteLine($"Player Look:     X: {Player.CameraRotationX}, Y: {Player.CameraRotationY}");
+            //DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
             DebugDraw.DrawXYZ(Player.Camera.Projection, Player.CameraRotationY, Player.CameraRotationX);
 
             Context.SwapBuffers();
@@ -206,14 +199,12 @@ namespace AtominaCraft
 
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
-            base.OnUpdateFrame(args);
             Delta.Time = (float)args.Time;
             UpdateGame();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            base.OnRenderFrame(args);
             RenderGame();
         }
     }

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AtominaCraft.BlockGrid
+namespace AtominaCraft.Blocks
 {
     public class BlockLocation
     {
@@ -39,6 +39,14 @@ namespace AtominaCraft.BlockGrid
             Z = z;
         }
 
+        public void Set(Chunk chunk, int x, int y, int z)
+        {
+            Chunk = chunk;
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
         public void Extract(Vector3 vector)
         {
             vector.X = X;
@@ -49,6 +57,16 @@ namespace AtominaCraft.BlockGrid
         public BlockLocation Translated(int x, int y, int z)
         {
             return new BlockLocation(Chunk, X + x, Y + y, Z + z);
+        }
+
+        public BlockLocation Translated(BlockLocation location)
+        {
+            return new BlockLocation(Chunk, X + location.X, Y + location.Y, Z + location.Z);
+        }
+
+        public BlockLocation GetWorldLocation(ChunkLocation chunk)
+        {
+            return new BlockLocation((chunk.X << 4) + X, Y, (chunk.Z << 4) + Z);
         }
 
         public override bool Equals(object obj)

@@ -17,7 +17,8 @@ namespace AtominaCraft.Entities.Player
         public EntityPlayerCamera()
         {
             Camera = new PlayerCamera();
-            BoundingBox.Expand(0.3f, 0.8f, 0.3f, 0.3f, 0.8f, 0.3f);
+            BoundingBox.SetFromCenter(Position, new Vector3(1.0f, 2.0f, 1.0f));
+            BoundingBox.Move(0, -0.5f, 0);
         }
 
         public Matrix4 WorldToCamera()
@@ -53,8 +54,9 @@ namespace AtominaCraft.Entities.Player
                 moveR += 1.0f;
             if (Inputs.Keyboard.IsKeyDown(Keys.Space))
                 moveU += 1.0f;
-            if (Inputs.Keyboard.IsKeyDown(Keys.LeftShift))
+            if (Inputs.Mouse.IsButtonDown(MouseButton.Button5))
                 moveU -= 1.0f;
+
 
             Move(moveB, moveR, moveU);
             
@@ -64,11 +66,12 @@ namespace AtominaCraft.Entities.Player
 
         public void Move(float back, float right, float up)
         {
+            float aa = back;
             Matrix4 camToWorld = Matrix4.CreateLocalToWorld(Position, Rotation, Scale) * Matrix4.RotationY(CameraRotationY);
-            Vector3 lookDirection = camToWorld.MultiplyDirection(new Vector3(right, 0, back));
-            Vector3 movement = lookDirection * GameSettings.DEFAULT_WALK_SPEED;
-            movement += new Vector3(0, up, 0) * GameSettings.DEFAULT_WALK_SPEED;
-            Velocity += movement;
+            Vector3 lookDirection = camToWorld.MultiplyDirection(new Vector3(right, up, back)).Normalised();
+            lookDirection.EnsureNormal();
+            Vector3 movement = lookDirection * GameSettings.DEFAULT_WALK_ACCELERATION;
+            AccelerateTowards(movement);
         }
 
         public void Look(float x, float y)

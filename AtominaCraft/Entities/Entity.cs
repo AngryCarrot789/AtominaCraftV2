@@ -22,6 +22,8 @@ namespace AtominaCraft.Entities
         public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
 
+        public float Height { get; set; }
+        public float Width { get; set; }
         public bool IsCollidedX { get; set; }
         public bool IsCollidedY { get; set; }
         public bool IsCollidedZ { get; set; }
@@ -40,14 +42,23 @@ namespace AtominaCraft.Entities
             Velocity = new Vector3();
             Rotation = new Vector3();
             Scale = new Vector3(1, 1, 1);
-            BoundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+            Height = Scale.Y;
+            Width = Scale.X;
+            BoundingBox = new AxisAlignedBB();
+            BoundingBox.SetFromCenter(Position, Scale);
+            BoundingBox.Offset(0, (-Height) / 8, 0);
         }
 
         public virtual void Update()
         {
-            Velocity *= 0.98f;
-            MoveTo(Position + (Velocity * Delta.Time));
-            Chunk = World.GetChunkAt((int)Math.Floor(Position.X) >> 4, (int)Math.Floor(Position.Z) >> 4);
+            PreviousPosition = Position;
+            Velocity *= (1.0f - 0.05f);
+            Position += (Velocity * Delta.Time);
+            UpdateAABBPosition();
+            Chunk = 
+                World.GetChunkAt(
+                    (int)Math.Floor(Position.X) >> 4, 
+                    (int)Math.Floor(Position.Z) >> 4);
         }
 
         public void UpdateAABBPosition()
@@ -58,11 +69,21 @@ namespace AtominaCraft.Entities
             BoundingBox.Move(differenceX, differenceY, differenceZ);
         }
 
-        public void MoveTo(Vector3 newPos)
+        public void MoveTo(Vector3 newPosition)
         {
-            PreviousPosition.Set(Position);
-            Position = newPos;
+            PreviousPosition = Position;
+            Position = newPosition;
             UpdateAABBPosition();
+        }
+
+        public void MoveTowards(Vector3 position)
+        {
+            MoveTo(position + position);
+        }
+
+        public void AccelerateTowards(Vector3 position)
+        {
+            Velocity += position * Delta.Time;
         }
     }
 }

@@ -93,6 +93,13 @@ namespace AtominaCraft.ZResources.Maths
             return v;
         }
 
+        public void EnsureNormal()
+        {
+            if (float.IsNaN(X)) X = 0;
+            if (float.IsNaN(Y)) Y = 0;
+            if (float.IsNaN(Z)) Z = 0;
+        }
+
         public float Angle(Vector3 b)
         {
             return Normalised().Dot(b.Normalised()).ACosf();

@@ -14,8 +14,12 @@ namespace AtominaCraft.ZResources.Windows
         {
             if (CanWrite)
             {
-                Action write = () => { Window.Write(text); };
-                Window.Invoke(write);
+                try
+                {
+                    Action write = () => { Window.Write(text); };
+                    Window.Invoke(write);
+                }
+                catch { }
             }
         }
 
@@ -28,8 +32,12 @@ namespace AtominaCraft.ZResources.Windows
         {
             if (CanWrite)
             {
-                Action clear = () => { Window.Clear(); };
-                Window.Invoke(clear);
+                try
+                {
+                    Action clear = () => { Window.Clear(); };
+                    Window.Invoke(clear);
+                }
+                catch { }
             }
         }
     }

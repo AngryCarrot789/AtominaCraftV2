@@ -15,7 +15,7 @@ namespace AtominaCraft
         static void Main()
         {
             Native.AllocConsole();
-            WindowManager.Initialise();
+            //WindowManager.Initialise();
 
             GameWindowSettings gws = GameWindowSettings.Default;
             gws.IsMultiThreaded = false;

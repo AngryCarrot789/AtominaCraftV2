@@ -39,16 +39,17 @@
         public const int RENDER_FBO_SIZE = 2048;
 
         // Gameplay
-        public static float MOUSE_SENSITIVITY       = 0.001f;
-        public static float MOUSE_SMOOTHING         = 0.1f;
-        public const float DEFAULT_ACCELERATION_MULTIPLIER = 0.05f;
-        public static float DEFAULT_FLY_SPEED       = 1.5f * DEFAULT_ACCELERATION_MULTIPLIER;
-        public static float DEFAULT_WALK_SPEED      = 1.1f * DEFAULT_ACCELERATION_MULTIPLIER;
-        public static float DEFAULT_SPRINT_SPEED    = 2.3f * DEFAULT_ACCELERATION_MULTIPLIER;
-        public static float PLAYER_HEIGHT           = 1.5f;
-        public static float PLAYER_RADIUS           = 0.3f;
-        public static float GRAVITY                 = -9.8f;
-        public static bool USE_BOBBING              = false;
-        public static bool CAN_CONFINE_CURSOR = true;
+        public static float MOUSE_SENSITIVITY        = 0.0013f;
+        public static float MOUSE_SMOOTHING          = 0.1f;
+        /// <summary>
+        /// This is a high value just because it is due to how movement works :(
+        /// </summary>
+        public const float DEFAULT_WALK_ACCELERATION = 40.0f;
+        public static float DEFAULT_FLY_SPEED        = 4.7f;
+        public static float DEFAULT_WALK_SPEED       = 2.6f;
+        public static float DEFAULT_SPRINT_SPEED     = 3.9f;
+        public static float GRAVITY_Y                = -9.8f;
+        public static bool USE_BOBBING               = false;
+        public static bool CAN_CONFINE_CURSOR        = true;
     }
 }

@@ -19,6 +19,10 @@ namespace AtominaCraft.Worlds.Chunks
                     {
                         BlockLocation blockLocation = new BlockLocation(chunk, x, y, z);
                         Block block = new Block(world, blockLocation);
+                        if (x == 0 || x == 15 || z == 0 || z == 15 || y == 0 || y == (height - 1))
+                            block.ShouldRender = true;
+                        else
+                            block.ShouldRender = false;
                         chunk.Blocks.Add(blockLocation, block);
                     }
                 }

@@ -11,6 +11,7 @@ namespace AtominaCraft.Worlds.Chunks
     {
         public const int Height = 256;
         public const int Width = 16;
+        private static BlockLocation TemporarBlockLocation = new BlockLocation(null, 0, 0, 0);
 
         public ChunkLocation Location { get; set; }
         public World World { get; set; }
@@ -31,7 +32,8 @@ namespace AtominaCraft.Worlds.Chunks
 
         public Block GetBlockAt(int x, int y, int z)
         {
-            return GetBlockAt(new BlockLocation(this, x, y, z));
+            TemporarBlockLocation.Set(this, x, y, z);
+            return GetBlockAt(TemporarBlockLocation);
         }
 
         public Block GetBlockAt(BlockLocation location)
@@ -40,6 +42,8 @@ namespace AtominaCraft.Worlds.Chunks
             {
                 int hash = location.GetHashCode();
                 Blocks.TryGetValue(location, out Block block);
+                if (block == null)
+                    return null;
                 return block;
             }
             catch { return null; }

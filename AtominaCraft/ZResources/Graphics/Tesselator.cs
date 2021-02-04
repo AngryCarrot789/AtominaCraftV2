@@ -1,21 +1,62 @@
 ﻿using AtominaCraft.BlockGrid;
 using AtominaCraft.Blocks;
+using AtominaCraft.Blocks.Rendering;
+using AtominaCraft.Entities.Player;
 using AtominaCraft.Worlds;
 using AtominaCraft.Worlds.Chunks;
-using AtominaCraft.Worlds.Chunks.Rendering;
 using AtominaCraft.ZResources.Maths;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+using System.Linq;
 
 namespace AtominaCraft.ZResources.Graphics
 {
-    public class Tesselator
+    public static class Tesselator
     {
-        public static void DrawChunkMesh(ChunkMesh mesh)
-        {
+        private static GameObject Cube { get; set; }
 
+        static Tesselator()
+        {
+            Cube = new GameObject();
+            Cube.Shader = GraphicsLoader.TextureShader;
+            Cube.Mesh = GraphicsLoader.Cube;
+        }
+
+        public static List<float> BlockUVs;
+
+        public static void DrawChunkBBB(PlayerCamera camera, Chunk chunk)
+        {
+            foreach (Block block in chunk.Blocks.Values)
+            {
+                if (block.ShouldRender)
+                {
+                    BlockLocation blockLocation = block.Location.GetWorldLocation(chunk.Location);
+                    if (!block.IsEmpty())
+                    {
+                        //DebugDraw.DrawCube(camera, GridLatch.GetBlockWorldSpace(blockLocation), GridLatch.BlockScale);
+                        //DebugDraw.DrawAABB(camera, block.BoundingBox);
+                        DrawBlock(
+                            block,
+                            blockLocation.X,
+                            blockLocation.Y,
+                            blockLocation.Z,
+                            camera);
+                    }
+                }
+            }
+        }
+
+
+        public static void DrawBlock(Block block, int x, int y, int z, PlayerCamera camera)
+        {
+            string textureName = BlockTextureLinker.GetTextureNameFromID(block.ID);
+            if (textureName == "")
+                return;
+
+            BlockTextureLinker.TextureMap.TryGetValue(textureName, out Texture texture);
+
+            Cube.Texture = texture;
+            Cube.Position = GridLatch.WTMGetBlock(x, y, z);
+            Cube.Draw(camera);
         }
 
         public struct Face
@@ -202,65 +243,69 @@ namespace AtominaCraft.ZResources.Graphics
             //    new float[] { 3, 7, 2, 2, 7, 6 }, // top face
             //};
             //
-            //BlockUVs = new float[]
-            //{
-            //    -1.0f, 0.0f,
-            //     0.0f, 0.0f,
-            //     0.0f, 1.0f,
-            //    -1.0f, 1.0f,
-            //
-            //    -1.0f, 0.0f,
-            //     0.0f, 0.0f,
-            //     0.0f, 1.0f,
-            //    -1.0f, 1.0f,
-            //
-            //    -1.0f, 0.0f,
-            //     0.0f, 0.0f,
-            //     0.0f, 1.0f,
-            //    -1.0f, 1.0f,
-            //
-            //    -1.0f, 0.0f,
-            //     0.0f, 0.0f,
-            //     0.0f, 1.0f,
-            //    -1.0f, 1.0f,
-            //
-            //    -1.0f, 0.0f,
-            //     0.0f, 0.0f,
-            //     0.0f, 1.0f,
-            //    -1.0f, 1.0f,
-            //
-            //    -1.0f, 0.0f,
-            //     0.0f, 0.0f,
-            //     0.0f, 1.0f,
-            //    -1.0f, 1.0f,
-            //};
+            float[] blockUvs = new float[]
+            {
+                -1.0f, 0.0f,
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                -1.0f, 1.0f,
+            
+                -1.0f, 0.0f,
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                -1.0f, 1.0f,
+            
+                -1.0f, 0.0f,
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                -1.0f, 1.0f,
+            
+                -1.0f, 0.0f,
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                -1.0f, 1.0f,
+            
+                -1.0f, 0.0f,
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                -1.0f, 1.0f,
+            
+                -1.0f, 0.0f,
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                -1.0f, 1.0f,
+            };
+            BlockUVs = blockUvs.ToList();
         }
+
+        private static List<float> TempVertices = new List<float>(512);
 
         public static List<float> GetVisibleVertices(bool top, bool front, bool bottom, bool left, bool back, bool right)
         {
-            int count =
-                (top ? 18 : 0) +
-                (front ? 18 : 0) +
-                (bottom ? 18 : 0) +
-                (left ? 18 : 0) +
-                (back ? 18 : 0) +
-                (right ? 18 : 0);
-            List<float> vertices = new List<float>(count);
+            //int count =
+            //    (top ? 18 : 0) +
+            //    (front ? 18 : 0) +
+            //    (bottom ? 18 : 0) +
+            //    (left ? 18 : 0) +
+            //    (back ? 18 : 0) +
+            //    (right ? 18 : 0);
+
+            TempVertices.Clear();
 
             if (top)
-                vertices.AddRange(TopVertices);
+                TempVertices.AddRange(TopVertices);
             if (front)
-                vertices.AddRange(FrontVertices);
+                TempVertices.AddRange(FrontVertices);
             if (bottom)
-                vertices.AddRange(BottomVertices);
+                TempVertices.AddRange(BottomVertices);
             if (left)
-                vertices.AddRange(LeftVertices);
+                TempVertices.AddRange(LeftVertices);
             if (back)
-                vertices.AddRange(BackVertices);
+                TempVertices.AddRange(BackVertices);
             if (right)
-                vertices.AddRange(RightVertices);
+                TempVertices.AddRange(RightVertices);
 
-            return vertices;
+            return TempVertices;
         }
 
         public static List<BlockDirection> GetVisibleFaces(Block block)
@@ -286,6 +331,48 @@ namespace AtominaCraft.ZResources.Graphics
 
             return visible;
         }
+
+        public static List<float> GenerateBlockMesh(Block block)
+        {
+            if (block == null) return null;
+            Chunk chunk = block.Location.Chunk;
+            BlockLocation location = block.Location;
+            Block left = chunk.GetBlockAt(location.X - 1, location.Y, location.Z);
+            Block righ = chunk.GetBlockAt(location.X + 1, location.Y, location.Z);
+            Block topp = chunk.GetBlockAt(location.X, location.Y + 1, location.Z);
+            Block botm = chunk.GetBlockAt(location.X, location.Y - 1, location.Z);
+            Block back = chunk.GetBlockAt(location.X, location.Y, location.Z + 1);
+            Block frnt = chunk.GetBlockAt(location.X, location.Y, location.Z - 1);
+            return GetVisibleVertices(
+                left == null || left.IsEmpty() || left.IsTransparent,
+                righ == null || righ.IsEmpty() || righ.IsTransparent,
+                topp == null || topp.IsEmpty() || topp.IsTransparent,
+                botm == null || botm.IsEmpty() || botm.IsTransparent,
+                back == null || back.IsEmpty() || back.IsTransparent,
+                frnt == null || frnt.IsEmpty() || frnt.IsTransparent);
+        }
+
+        //public static ChunkMesh GenerateChunk(Chunk chunk)
+        //{
+        //    List<float> vertices = new List<float>(1024);
+        //    //List<float> uvs = new List<float>(1024);
+        //    for (int y = 0; y < Chunk.Height - 1; y++)
+        //    {
+        //        for (int x = 0; x < Chunk.Width - 1; x++)
+        //        {
+        //            for (int z = 0; z < Chunk.Width - 1; z++)
+        //            {
+        //                Block block = chunk.GetBlockAt(x, y, z);
+        //                List<float> verts = GenerateBlockMesh(block);
+        //                if (verts != null)
+        //                    vertices.AddRange(verts);
+        //            }
+        //        }
+        //        vertices.Clear();
+        //    }
+        //    ChunkMesh mesh = new ChunkMesh(chunk, vertices, BlockUVs);
+        //    return mesh;
+        //}
 
         //public static List<float> GetCulled(HashSet<BlockDirection> directionsVisible)
         //{
