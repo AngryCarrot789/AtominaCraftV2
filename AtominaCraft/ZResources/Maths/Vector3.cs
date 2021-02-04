@@ -1,4 +1,5 @@
 ﻿using AtominaCraft.ZResources.Strings;
+using System;
 
 namespace AtominaCraft.ZResources.Maths
 {
@@ -182,11 +183,7 @@ namespace AtominaCraft.ZResources.Maths
 
         public override int GetHashCode()
         {
-            // 20, 30, 40
-            // 20 XOR (30 << 2) XOR (40 >> 2)
-            // 20 XOR 120 XOR 10
-            // 102
-            return X.GetHashCode() ^ Y.GetHashCode() << 2 ^ Z.GetHashCode() >> 2;
+            return HashCode.Combine(X.GetHashCode(), Y.GetHashCode(), Z.GetHashCode());
         }
 
         public override string ToString()

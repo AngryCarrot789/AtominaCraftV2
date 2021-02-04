@@ -17,7 +17,7 @@ namespace AtominaCraft.Worlds.Chunks
                 {
                     for (int y = 0; y < height; y++)
                     {
-                        BlockLocation blockLocation = new BlockLocation(x, y, z);
+                        BlockLocation blockLocation = new BlockLocation(chunk, x, y, z);
                         Block block = new Block(world, blockLocation);
                         chunk.Blocks.Add(blockLocation, block);
                     }

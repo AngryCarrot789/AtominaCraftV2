@@ -17,7 +17,7 @@ namespace AtominaCraft.Entities.Player
         public EntityPlayerCamera()
         {
             Camera = new PlayerCamera();
-            BoundingBox.Shrink(0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f);
+            BoundingBox.Expand(0.3f, 0.8f, 0.3f, 0.3f, 0.8f, 0.3f);
         }
 
         public Matrix4 WorldToCamera()

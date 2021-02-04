@@ -1,4 +1,5 @@
 ﻿using AtominaCraft.ZResources.Strings;
+using System;
 
 namespace AtominaCraft.ZResources.Maths
 {
@@ -149,7 +150,7 @@ namespace AtominaCraft.ZResources.Maths
 
         public override int GetHashCode()
         {
-            return X.GetHashCode() ^ Y.GetHashCode() << 2;
+            return HashCode.Combine(X.GetHashCode(), Y.GetHashCode());
         }
     }
 }

@@ -2,6 +2,8 @@
 using AtominaCraft.ZResources.Maths;
 using AtominaCraft.Worlds;
 using System.ComponentModel.DataAnnotations;
+using AtominaCraft.Worlds.Chunks;
+using System;
 
 namespace AtominaCraft.Entities
 {
@@ -12,6 +14,7 @@ namespace AtominaCraft.Entities
         public bool CanEntitySpawn { get; set; }
 
         public World World { get; set; }
+        public Chunk Chunk { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 PreviousPosition { get; set; }
         public Vector3 LastTickPosition { get; set; }
@@ -44,6 +47,7 @@ namespace AtominaCraft.Entities
         {
             Velocity *= 0.98f;
             MoveTo(Position + (Velocity * Delta.Time));
+            Chunk = World.GetChunkAt((int)Math.Floor(Position.X) >> 4, (int)Math.Floor(Position.Z) >> 4);
         }
 
         public void UpdateAABBPosition()

@@ -109,11 +109,14 @@ namespace AtominaCraft
             Player = new EntityPlayerCamera();
             Worlds = new List<World>();
 
+
             World earth = new World();
             earth.SetMainPlayer(Player);
             Player.MoveTo(new Vector3(0, 0, 3));
 
-            Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(1, 1), 6);
+            Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(0, 0), 6);
+            Player.Chunk = chunk;
+
             //ChunkMeshGenerator.GenerateChunk(chunk);
             earth.Chunks.Add(chunk.Location, chunk);
             Worlds.Add(earth);
@@ -132,6 +135,8 @@ namespace AtominaCraft
             cube.Scale = Vector3.Ones;
             cube.Rotation = Vector3.Zero;
 
+            chunk.GetBlockAt(15, 5, 15).ID = 0;
+
             base.OnLoad();
         }
 
@@ -139,6 +144,8 @@ namespace AtominaCraft
         {
             try
             {
+                //Block test = Player.Chunk.GetBlockAt(16, 3, 16);
+                //test.ID = 0;
                 if (KeyboardState.IsKeyDown(Keys.Escape))
                 {
                     this.Close();
@@ -175,16 +182,14 @@ namespace AtominaCraft
             Vector3 position = new Vector3();
             foreach (Chunk chunk in Player.World.Chunks.Values)
             {
-                //ChunkMesh mesh = ChunkMeshGenerator.GetMesh(chunk);
-                //if (mesh != null)
-                //{
-                //    mesh.Draw(Player.Camera);
-                //}
                 foreach (Block block in chunk.Blocks.Values)
                 {
-                    block.Location.Extract(position);
-                    DebugDraw.DrawCube(Player.Camera, GridLatch.GetBlockWorldSpace(block.Location), Vector3.Halfs);
-                    BlockRenderer.DrawBlock(block, Player.Camera);
+                    if (!block.IsEmpty())
+                    {
+                        block.Location.Extract(position);
+                        //DebugDraw.DrawCube(Player.Camera, GridLatch.GetBlockWorldSpace(block.Location), Vector3.Halfs);
+                        BlockRenderer.DrawBlock(block, Player.Camera);
+                    }
                 }
             }
 

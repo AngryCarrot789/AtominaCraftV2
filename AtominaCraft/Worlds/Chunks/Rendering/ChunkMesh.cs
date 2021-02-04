@@ -33,10 +33,10 @@ namespace AtominaCraft.Worlds.Chunks.Rendering
                 {
                     for (int y = 0; y < Chunk.Height; y++)
                     {
-                        HashSet<BlockDirection> visible = GetVisibleSides(new BlockLocation(x, y, z));
+                        HashSet<BlockDirection> visible = GetVisibleSides(new BlockLocation(Chunk, x, y, z));
 
-                        vertices.AddRange(BlockMesh.GetCulled(visible));
-                        uvs.AddRange(BlockMesh.GetUVs());
+                        //vertices.AddRange(BlockMesh.GetCulled(visible));
+                        //uvs.AddRange(BlockMesh.GetUVs());
                     }
                 }
             }

@@ -1,4 +1,6 @@
-﻿namespace AtominaCraft.ZResources.Maths
+﻿using System;
+
+namespace AtominaCraft.ZResources.Maths
 {
     public class Vector4
     {
@@ -64,6 +66,11 @@
         public static Vector4 operator -(Vector4 l, Vector4 r)
         {
             return new Vector4(l.X - r.X, l.Y - r.Y, l.Z - r.Z, l.W - r.W);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X.GetHashCode(), Y.GetHashCode(), Z.GetHashCode(), W.GetHashCode());
         }
     }
 }

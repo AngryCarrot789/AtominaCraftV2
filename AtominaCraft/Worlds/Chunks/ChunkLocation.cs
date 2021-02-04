@@ -26,7 +26,15 @@ namespace AtominaCraft.Worlds.Chunks
 
         public override int GetHashCode()
         {
-            return X + Z;
+            return HashCode.Combine(X.GetHashCode(), Z.GetHashCode());
+        }
+
+        public override bool Equals(object obj)
+        {
+            ChunkLocation location = (ChunkLocation)obj;
+            return 
+                location.X.Equals(X) && 
+                location.Z.Equals(Z);
         }
     }
 }

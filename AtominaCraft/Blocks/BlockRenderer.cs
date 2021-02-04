@@ -22,6 +22,10 @@ namespace AtominaCraft.Blocks
         public static void DrawBlock(Block block, PlayerCamera camera)
         {
             string textureName = BlockTextureLinker.GetTextureNameFromID(block.ID);
+            if (textureName == "")
+            {
+                return;
+            }
             BlockTextureLinker.TextureMap.TryGetValue(textureName, out Texture texture);
 
             Cube.Texture = texture;

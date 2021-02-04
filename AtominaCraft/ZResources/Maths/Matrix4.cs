@@ -1,4 +1,5 @@
 ﻿using AtominaCraft.ZResources.Strings;
+using System;
 
 namespace AtominaCraft.ZResources.Maths
 {
@@ -511,6 +512,7 @@ namespace AtominaCraft.ZResources.Maths
 
         #endregion
 
+
         public override string ToString()
         {
             int maxLen = 10;
@@ -519,6 +521,14 @@ namespace AtominaCraft.ZResources.Maths
             string row3 = M[8].EnsureLength(maxLen) + M[9].EnsureLength(maxLen) + M[10].EnsureLength(maxLen) + M[11].EnsureLength(maxLen);
             string row4 = M[12].EnsureLength(maxLen) + M[13].EnsureLength(maxLen) + M[14].EnsureLength(maxLen) + M[15].EnsureLength(maxLen);
             return $"{row1}\n{row2}\n{row3}\n{row4}";
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(
+                HashCode.Combine(M[0].GetHashCode(), M[1].GetHashCode(), M[2].GetHashCode(), M[3].GetHashCode()),
+                HashCode.Combine(M[4].GetHashCode(), M[5].GetHashCode(), M[6].GetHashCode(), M[7].GetHashCode()),
+                HashCode.Combine(M[8].GetHashCode(), M[9].GetHashCode(), M[10].GetHashCode(), M[11].GetHashCode()),
+                HashCode.Combine(M[12].GetHashCode(), M[13].GetHashCode(), M[14].GetHashCode(), M[15].GetHashCode()));
         }
     }
 }

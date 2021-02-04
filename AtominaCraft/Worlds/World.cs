@@ -12,6 +12,9 @@ namespace AtominaCraft.Worlds
     public class World
     {
         //public Sky Sky { get; set; }
+
+        public string Name { get; set; }
+
         public EntityPlayerCamera MainPlayer { get; set; }
 
         public Dictionary<ChunkLocation, Chunk> Chunks { get; set; }
@@ -19,6 +22,7 @@ namespace AtominaCraft.Worlds
         public World()
         {
             //Sky = new Sky();
+            Name = "world";
             Chunks = new Dictionary<ChunkLocation, Chunk>();
         }
 
@@ -46,6 +50,17 @@ namespace AtominaCraft.Worlds
         {
             MainPlayer = player;
             player.World = this;
+        }
+
+        public override bool Equals(object obj)
+        {
+            World world = (World)obj;
+            return world.Name.Equals(Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }

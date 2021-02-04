@@ -3,6 +3,8 @@ using AtominaCraft.Blocks.Rendering;
 using AtominaCraft.Collision;
 using AtominaCraft.Worlds;
 using AtominaCraft.ZResources.Maths;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace AtominaCraft.Blocks
 {
@@ -24,6 +26,22 @@ namespace AtominaCraft.Blocks
             ID = id;
             IsTransparent = ID == ((int)TextureTypes.Air) || ID == ((int)TextureTypes.Glass);
             BoundingBox = new AxisAlignedBB(Location);
+        }
+
+        public bool IsEmpty()
+        {
+            return ID == 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            Block block = (Block)obj;
+            return block.World.Equals(World) && block.Location.Equals(Location) && block.ID.Equals(ID);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ID.GetHashCode(), Location.GetHashCode());
         }
     }
 }

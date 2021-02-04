@@ -129,22 +129,22 @@ namespace AtominaCraft.Collision
 
         public void Expand(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
         {
-            MinX -= minX;
-            MinY -= minY;
-            MinZ -= minZ;
-            MaxX += maxX;
-            MaxY += maxY;
-            MaxZ += maxZ;
-        }
-
-        public void Shrink(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
-        {
             MinX += minX;
             MinY += minY;
             MinZ += minZ;
             MaxX -= maxX;
             MaxY -= maxY;
             MaxZ -= maxZ;
+        }
+
+        public void Shrink(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+        {
+            MinX -= minX;
+            MinY -= minY;
+            MinZ -= minZ;
+            MaxX += maxX;
+            MaxY += maxY;
+            MaxZ += maxZ;
         }
 
         public static bool IsPointInsideAABB(Vector3 p, AxisAlignedBB b)

@@ -39,7 +39,12 @@ namespace AtominaCraft.Blocks
         /// <summary>
         /// Facing (0,0,-1)
         /// </summary>
-        Down = 16
+        Down = 16,
+
+        _Left = West,
+        _Right = East,
+        _Forward = North,
+        _Backward = South,
     }
 
     public static class BlockDirectionExtensions

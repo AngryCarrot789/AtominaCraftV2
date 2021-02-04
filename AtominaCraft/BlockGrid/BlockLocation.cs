@@ -1,4 +1,5 @@
-﻿using AtominaCraft.ZResources.Maths;
+﻿using AtominaCraft.Worlds.Chunks;
+using AtominaCraft.ZResources.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +11,14 @@ namespace AtominaCraft.BlockGrid
         public int X { get; set; }
         public int Y { get; set; }
         public int Z { get; set; }
+
+        public Chunk Chunk { get; set; }
+
+        public BlockLocation(Chunk chunk, int x, int y, int z)
+        {
+            Chunk = chunk;
+            Set(x, y, z);
+        }
 
         public BlockLocation(int x, int y, int z)
         {
@@ -39,12 +48,22 @@ namespace AtominaCraft.BlockGrid
 
         public BlockLocation Translated(int x, int y, int z)
         {
-            return new BlockLocation(X + x, Y + y, Z + z);
+            return new BlockLocation(Chunk, X + x, Y + y, Z + z);
+        }
+
+        public override bool Equals(object obj)
+        {
+            BlockLocation location = (BlockLocation)obj;
+            return
+                location.Chunk.Equals(Chunk) &&
+                location.X.Equals(X) &&
+                location.Y.Equals(Y) &&
+                location.Z.Equals(Z);
         }
 
         public override int GetHashCode()
         {
-            return X + Y + Z;
+            return HashCode.Combine(Chunk.GetHashCode(), HashCode.Combine(X.GetHashCode(), Y.GetHashCode(), Z.GetHashCode()));
         }
     }
 }
