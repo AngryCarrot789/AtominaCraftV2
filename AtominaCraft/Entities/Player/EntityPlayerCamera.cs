@@ -66,7 +66,6 @@ namespace AtominaCraft.Entities.Player
 
         public void Move(float back, float right, float up)
         {
-            float aa = back;
             Matrix4 camToWorld = Matrix4.CreateLocalToWorld(Position, Rotation, Scale) * Matrix4.RotationY(CameraRotationY);
             Vector3 lookDirection = camToWorld.MultiplyDirection(new Vector3(right, up, back)).Normalised();
             lookDirection.EnsureNormal();

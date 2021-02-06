@@ -14,6 +14,11 @@ using OpenTK.Windowing.Common;
 using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.ZResources.Windows;
 using Forms = System.Windows.Forms;
+using AtominaCraft.Worlds.Chunks.MeshGeneration.Face;
+using AtominaCraft.Blocks.Rendering;
+using AtominaCraft.Worlds.Chunks.MeshGeneration;
+using System.Text;
+using System.IO;
 
 namespace AtominaCraft
 {
@@ -88,11 +93,13 @@ namespace AtominaCraft
                 base.Run();
             }
         }
-        //ChunkMesh mesh;
+
+        //private ChunkMesh TestMesh;
+
         protected override void OnLoad()
         {
             // Called just after OpenGL is initialised
-            DebugText.CanWrite = true;
+            //DebugText.CanWrite = true;
 
             // Initialise Game
 
@@ -106,6 +113,61 @@ namespace AtominaCraft
             earth.SetMainPlayer(Player);
             Player.MoveTo(new Vector3(0, 5, 0));
 
+            // Top    1 
+            // Front  1 
+            // Left   1 
+            // Bottom 1 
+            // Right  1 
+            // Back   1 
+
+            // Top    2 
+            // Front  2 
+            // Left   2 
+            // Bottom 2 
+            // Right  2 
+            // Back   2 
+
+            //BlockFace topp = BlockFace.GenerateFace(FaceDirection.Top);
+            //BlockFace fron = BlockFace.GenerateFace(FaceDirection.Front);
+            //BlockFace left = BlockFace.GenerateFace(FaceDirection.Left);
+            //BlockFace bott = BlockFace.GenerateFace(FaceDirection.Bottom);
+            //BlockFace righ = BlockFace.GenerateFace(FaceDirection.Right);
+            //BlockFace back = BlockFace.GenerateFace(FaceDirection.Back);
+            //
+            //topp.Face1.WriteVertices(vertices);
+            //fron.Face1.WriteVertices(vertices);
+            //left.Face1.WriteVertices(vertices);
+            //bott.Face1.WriteVertices(vertices);
+            //righ.Face1.WriteVertices(vertices);
+            //back.Face1.WriteVertices(vertices);
+            //topp.Face2.WriteVertices(vertices);
+            //fron.Face2.WriteVertices(vertices);
+            //left.Face2.WriteVertices(vertices);
+            //bott.Face2.WriteVertices(vertices);
+            //righ.Face2.WriteVertices(vertices);
+            //back.Face2.WriteVertices(vertices);
+            //
+            //topp.Face1.WriteTextureCoordinates(uvs);
+            //fron.Face1.WriteTextureCoordinates(uvs);
+            //left.Face1.WriteTextureCoordinates(uvs);
+            //bott.Face1.WriteTextureCoordinates(uvs);
+            //righ.Face1.WriteTextureCoordinates(uvs);
+            //back.Face1.WriteTextureCoordinates(uvs);
+            //topp.Face2.WriteTextureCoordinates(uvs);
+            //fron.Face2.WriteTextureCoordinates(uvs);
+            //left.Face2.WriteTextureCoordinates(uvs);
+            //bott.Face2.WriteTextureCoordinates(uvs);
+            //righ.Face2.WriteTextureCoordinates(uvs);
+            //back.Face2.WriteTextureCoordinates(uvs);
+
+            //mesh = new Mesh(vertices, uvs);
+            //obj = new GameObject()
+            //{
+            //    Mesh = mesh,
+            //    Position = new Vector3(2.0f, 5.0f, 1.0f),
+            //    Shader = GraphicsLoader.TextureShader,
+            //    Texture = BlockTextureLinker.TextureMap[BlockTextureLinker.GetTextureNameFromID(4)]
+            //};
             //Tesselator.Generate();
             //mesh = Tesselator.GenerateChunk(chunk1);
 
@@ -114,7 +176,7 @@ namespace AtominaCraft
             //Chunk chunk3 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0, -1), 2);
             //Chunk chunk4 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0,  0), 1);
 
-            for(int x = -1, total = 1; x <= 1; x++, total++)
+            for (int x = -1, total = 1; x <= 1; x++, total++)
             {
                 for (int z = 0; z <= 1; z++)
                 {
@@ -122,6 +184,23 @@ namespace AtominaCraft
                     earth.Chunks.Add(chunk.Location, chunk);
                 }
             }
+
+            //Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(0, 0), 1);
+            //earth.Chunks.Add(chunk.Location, chunk);
+            //
+            //TestMesh = ChunkMeshGenerator.GenerateChunk(chunk);
+            //
+            //StringBuilder sb = new StringBuilder(10000000);
+            //
+            //for (int i = 0; i < TestMesh.Vertices.Count; i += 3)
+            //{
+            //    float vertex1 = (float)TestMesh.Vertices[i + 0];
+            //    float vertex2 = (float)TestMesh.Vertices[i + 1];
+            //    float vertex3 = (float)TestMesh.Vertices[i + 2];
+            //    sb.AppendLine($"v {vertex1} {vertex2} {vertex3}");
+            //}
+            //
+            //File.WriteAllText(@"C:\Users\kettl\Desktop\suckoff1.txt", sb.ToString());
 
             //ChunkMeshGenerator.GenerateChunk(chunk);
             //earth.Chunks.Add(chunk1.Location, chunk1);
@@ -179,14 +258,19 @@ namespace AtominaCraft
             Player.Camera.SetSize(Size.X, Size.Y, GameSettings.RENDER_NEAR_MIN, GameSettings.RENDER_FAR, GameSettings.RENDER_FOV);
             Player.Camera.UseViewport();
 
-           // mesh.Draw(Player.Camera);
+            // mesh.Draw(Player.Camera);
 
             // less harsh on the GC than creating 100s of vectors every second
             foreach (Chunk chunk in Player.World.Chunks.Values)
             {
                 Tesselator.DrawChunkBBB(Player.Camera, chunk);
+                //Tesselator.DrawChunkMesh(Player.Camera, chunk, TestMesh);
                 DebugDraw.DrawChunk(Player.Camera, chunk);
             }
+
+            //GL.FrontFace(FrontFaceDirection.Cw);
+            //obj.Draw(Player.Camera);
+            //GL.FrontFace(FrontFaceDirection.Ccw);
 
             //DebugText.Clear();
             //DebugText.WriteLine($"Player Position: {Player.Position}");

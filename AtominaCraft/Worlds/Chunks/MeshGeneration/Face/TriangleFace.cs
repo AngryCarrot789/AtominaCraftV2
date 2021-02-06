@@ -1,0 +1,38 @@
+﻿using System.Collections.Generic;
+
+namespace AtominaCraft.Worlds.Chunks.MeshGeneration.Face
+{
+    public struct TriangleFace
+    {
+        public Vertex3f V1;
+        public Vertex3f V2;
+        public Vertex3f V3;
+        public Vertex2f VT1;
+        public Vertex2f VT2;
+        public Vertex2f VT3;
+
+        public TriangleFace(Vertex3f v1, Vertex3f v2, Vertex3f v3, Vertex2f vt1, Vertex2f vt2, Vertex2f vt3)
+        {
+            V1 = v1;
+            V2 = v2;
+            V3 = v3;
+            VT1 = vt1;
+            VT2 = vt2;
+            VT3 = vt3;
+        }
+
+        public void WriteVertices(List<float> vertices)
+        {
+            V1.WriteVertices(vertices);
+            V2.WriteVertices(vertices);
+            V3.WriteVertices(vertices);
+        }
+
+        public void WriteTextureCoordinates(List<float> uvs)
+        {
+            VT1.WriteVertices(uvs);
+            VT2.WriteVertices(uvs);
+            VT3.WriteVertices(uvs);
+        }
+    }
+}

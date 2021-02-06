@@ -142,6 +142,18 @@ namespace AtominaCraft.ZResources.Maths
             return new Vector3(0, 0, 0);
         }
 
+        public static Vector3 GetVertexFromList(this List<float> list, int offset, int startPoint)
+        {
+            if (list.Count >= 3 && startPoint < list.Count)
+            {
+                return new Vector3(
+                    list[startPoint + (offset * 3)],
+                    list[startPoint + (offset * 3) + 1],
+                    list[startPoint + (offset * 3) + 2]);
+            }
+            return new Vector3(0, 0, 0);
+        }
+
         public static Vector3 DegreesToEuler(float x, float y, float z)
         {
             return new Vector3(
@@ -168,7 +180,7 @@ namespace AtominaCraft.ZResources.Maths
             return float.TryParse(val, out float value) ? value : 0.0f;
         }
 
-        public static float[] Tofloats(this string[] array)
+        public static float[] ToFloats(this string[] array)
         {
             float[] floats = new float[array.Length];
             for (int i = 0; i < array.Length; i++)

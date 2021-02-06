@@ -47,6 +47,10 @@ namespace AtominaCraft.ZResources.Graphics
         /// </summary>
         public bool Is3DTexture { get; set; }
 
+        /// <summary>
+        /// Generates a mesh using the given vertices. doesn't support textures, only shading
+        /// </summary>
+        /// <param name="mesh">the vertices</param>
         public Mesh(float[] mesh)
         {
             Vertices = new List<float>(3);
@@ -69,6 +73,11 @@ namespace AtominaCraft.ZResources.Graphics
             }
         }
 
+        /// <summary>
+        /// Generates a mesh using the given vertices and texture coordinates, and then auto-generates the normals
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="uvs"></param>
         public Mesh(List<float> vertices, List<float> uvs)
         {
             Vertices = vertices;
@@ -77,23 +86,82 @@ namespace AtominaCraft.ZResources.Graphics
             VBOs = new int[VBO_COUNT];
 
             // generate normals
-            for (int i = 0; i < vertices.Count; i += 3)
+            for (int i = 0; i < vertices.Count; i += 9)
             {
-                float vertex = vertices[i];
-                Vector3 vertex1 = new Vector3(vertices[i + 0]);
-                Vector3 vertex2 = new Vector3(vertices[i + 1]);
-                Vector3 vertex3 = new Vector3(vertices[i + 2]);
-                Vector3 normals = (vertex2 - vertex1).Cross(vertex3 - vertex1).Normalised();
-                Normals.Add(normals.X);
-                Normals.Add(normals.Y);
-                Normals.Add(normals.Z);
+                Vector3 vertex1 = new Vector3(
+                    vertices[i + 0],
+                    vertices[i + 1],
+                    vertices[i + 2]
+                    );
+                Vector3 vertex2 = new Vector3(
+                    vertices[i + 3],
+                    vertices[i + 4],
+                    vertices[i + 5]
+                    );
+                Vector3 vertex3 = new Vector3(
+                    vertices[i + 6],
+                    vertices[i + 7],
+                    vertices[i + 8]
+                    );
+                Vector3 normal = (vertex2 - vertex1).Cross(vertex3 - vertex1).Normalised();
+                Normals.Add(normal.X);
+                Normals.Add(normal.Y);
+                Normals.Add(normal.Z);
+                Normals.Add(normal.X);
+                Normals.Add(normal.Y);
+                Normals.Add(normal.Z);
+                Normals.Add(normal.X);
+                Normals.Add(normal.Y);
+                Normals.Add(normal.Z);
             }
 
-            // Generate vertex array object
+            // Generate vertex array buffer
             VAO = GL.GenVertexArray();
             GL.BindVertexArray(VAO);
 
-            // Generate vertex buffer objects
+            // Generate vertex buffer
+            VBOs[0] = GL.GenBuffer();
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[0]);
+                GL.BufferData(BufferTarget.ArrayBuffer, Vertices.Count * sizeof(float), Vertices.ToArray(), BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(0);
+                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            }
+            // Generate texture buffer
+            VBOs[1] = GL.GenBuffer();
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[1]);
+                GL.BufferData(BufferTarget.ArrayBuffer, UVs.Count * sizeof(float), UVs.ToArray(), BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(1);
+                GL.VertexAttribPointer(1, (Is3DTexture ? 3 : 2), VertexAttribPointerType.Float, false, 0, 0);
+            }
+            // Generate normals buffer
+            VBOs[2] = GL.GenBuffer();
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[2]);
+                GL.BufferData(BufferTarget.ArrayBuffer, Normals.Count * sizeof(float), Normals.ToArray(), BufferUsageHint.StaticDraw);
+                GL.EnableVertexAttribArray(2);
+                GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// Generates a mesh using the given vertices, texture coordinates and normals
+        /// <param name="vertices"></param>
+        /// <param name="uvs"></param>
+        /// <param name="normals"></param>
+        public Mesh(List<float> vertices, List<float> uvs, List<float> normals)
+        {
+            Vertices = vertices;
+            UVs = uvs;
+            Normals = normals;
+            VBOs = new int[VBO_COUNT];
+
+            // Generate vertex array buffer
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
+
+            // Generate vertex buffer
             VBOs[0] = GL.GenBuffer();
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[0]);
@@ -157,7 +225,7 @@ namespace AtominaCraft.ZResources.Graphics
                     // Vertex
                     if (line.Check(0, 2, "v "))
                     {
-                        float[] verts = line.Extract(2).Split(' ').Tofloats();
+                        float[] verts = line.Extract(2).Split(' ').ToFloats();
                         foreach (float vertex in verts)
                         {
                             vertPalette.Add(vertex);
@@ -168,7 +236,7 @@ namespace AtominaCraft.ZResources.Graphics
                     else if (line.Check(0, 3, "vt "))
                     {
                         // this should only be 2 long, the array
-                        float[] uvs = line.Extract(3).Split(' ').Tofloats();
+                        float[] uvs = line.Extract(3).Split(' ').ToFloats();
                         uvPalette.Add(uvs[0]);
                         uvPalette.Add(uvs[1]);
                         if (uvs.Length > 2)
@@ -208,7 +276,7 @@ namespace AtominaCraft.ZResources.Graphics
                     // aka vertex indices.
                     else if (line.Check(0, 2, "f "))
                     {
-                        // 2/1/1...3/2/1...1/3/1
+                        // 2/1/1..\n..3/2/1..\n..1/3/1
                         string[] faces = line.Extract(2).Split(' ');
 
                         bool floatSlash = false;
@@ -216,7 +284,6 @@ namespace AtominaCraft.ZResources.Graphics
 
                         int a = 0, b = 0, c = 0, d = 0;
                         int at = 0, bt = 0, ct = 0, dt = 0;
-                        int temp;
 
                         bool wild = line[2] == '*';
                         bool wild2 = line[3] == '*';
@@ -266,9 +333,9 @@ namespace AtominaCraft.ZResources.Graphics
                         else if (numSlashes == 3)
                         {
                             // ... = new element, 2/2...3/3...1/1 to 2/2/3/3/1/1 (trim just in case)
-                            string joinedVertices = string.Join('/', faces).Trim();
+                            string joinedParts = string.Join('/', faces).Trim();
                             // 2/2/3/3/1/1 to 2...2...3...3...1...1
-                            int[] faceVertices = joinedVertices.Split('/').ToInts();
+                            int[] faceVertices = joinedParts.Split('/').ToInts();
                             if (faceVertices.Length >= 6)
                             {
                                 a = faceVertices[0];
@@ -387,56 +454,82 @@ namespace AtominaCraft.ZResources.Graphics
         /// <summary>
         /// Adds a face to the meshes vertices, textures and normals
         /// </summary>
-        /// <param name="vertPalette">all of the face's vertices. should only be 3 long</param>
-        /// <param name="uvPalette">all of the texture coordinates. should be either 2 or 3 long</param>
-        /// <param name="x" >vertex x position</param>
-        /// <param name="xT">texture x position</param>
-        /// <param name="y" >vertex y position</param>
-        /// <param name="yT">texture y position</param>
-        /// <param name="z" >vertex z position</param>
-        /// <param name="zT">texture z position</param>
+        /// <param name="vertPalette">all of the vertices usable. for a cube it might be 24 long</param>
+        /// <param name="uvPalette">all of the texture coordinates</param>
+        /// <param name="a" >vertex x index</param>
+        /// <param name="aT">texture x index (u)</param>
+        /// <param name="b" >vertex y index</param>
+        /// <param name="bT">texture y index (v)</param>
+        /// <param name="c" >vertex z index</param>
+        /// <param name="cT">texture z index (w)</param>
         /// <param name="is3dTexture">says whether the face will have a 3d texture</param>
-        public void AddFace(List<float> vertPalette, List<float> uvPalette, int x, int xT, int y, int yT, int z, int zT, bool is3dTexture)
+        public void AddFace(List<float> vertPalette,
+                            List<float> uvPalette,
+                            int a,
+                            int aT,
+                            int b,
+                            int bT,
+                            int c,
+                            int cT,
+                            bool is3dTexture)
         {
-            if (x > 0 && y > 0 && z > 0)
+            if (a > 0 && b > 0 && c > 0)
             {
-                if (xT > 0 && yT > 0 && zT > 0)
+                if (aT > 0 && bT > 0 && cT > 0)
                 {
-                    x -= 1; y -= 1; z -= 1;
-                    xT -= 1; yT -= 1; zT -= 1;
-                    int[] vIx = new int[3] { x, y, z };
-                    int[] uvIx = new int[3] { xT, yT, zT };
-                    Vector3 vertex1 = vertPalette.GetVertexFromList(x * 3);
-                    Vector3 vertex2 = vertPalette.GetVertexFromList(y * 3);
-                    Vector3 vertex3 = vertPalette.GetVertexFromList(z * 3);
+                    // say...
+                    /*          a = 5 
+                     *          b = 3 
+                     *          c = 1
+                     *          
+                     *          aT = 1
+                     *          bT = 2
+                     *          cT = 3
+                     *          
+                     *          now they're:
+                     *          
+                     *          a = 4
+                     *          b = 2 
+                     *          c = 0
+                     *          aT = 0
+                     *          bT = 1
+                     *          cT = 2
+                     */
+                    a -= 1; b -= 1; c -= 1;
+                    aT -= 1; bT -= 1; cT -= 1;
+                    int[] vertexIndices = new int[3] { a, b, c };
+                    int[] textureIndices = new int[3] { aT, bT, cT };
+                    Vector3 vertex1 = vertPalette.GetVertexFromList(a * 3);
+                    Vector3 vertex2 = vertPalette.GetVertexFromList(b * 3);
+                    Vector3 vertex3 = vertPalette.GetVertexFromList(c * 3);
                     Vector3 normals = (vertex2 - vertex1).Cross(vertex3 - vertex1).Normalised();
 
                     for (int i = 0; i < 3; i++)
                     {
-                        int v = vIx[i];
-                        int vt = uvIx[i];
-                        if (v < (vertPalette.Count / 3))
+                        int vertIndex = vertexIndices[i];
+                        int textIndex = textureIndices[i];
+                        if (vertIndex < (vertPalette.Count / 3))
                         {
-                            Vertices.Add(vertPalette[v * 3]);
-                            Vertices.Add(vertPalette[v * 3 + 1]);
-                            Vertices.Add(vertPalette[v * 3 + 2]);
+                            Vertices.Add(vertPalette[(vertIndex * 3)]);
+                            Vertices.Add(vertPalette[(vertIndex * 3) + 1]);
+                            Vertices.Add(vertPalette[(vertIndex * 3) + 2]);
                             if (uvPalette.Count > 0)
                             {
                                 if (is3dTexture)
                                 {
-                                    if (vt < (uvPalette.Count / 3))
+                                    if (textIndex < (uvPalette.Count / 3))
                                     {
-                                        UVs.Add(uvPalette[vt * 3]);
-                                        UVs.Add(uvPalette[vt * 3 + 1]);
-                                        UVs.Add(uvPalette[vt * 3 + 2]);
+                                        UVs.Add(uvPalette[(textIndex * 3)]);
+                                        UVs.Add(uvPalette[(textIndex * 3) + 1]);
+                                        UVs.Add(uvPalette[(textIndex * 3) + 2]);
                                     }
                                 }
                                 else
                                 {
-                                    if (vt < (uvPalette.Count / 2))
+                                    if (textIndex < (uvPalette.Count / 2))
                                     {
-                                        UVs.Add(uvPalette[vt * 2]);
-                                        UVs.Add(uvPalette[vt * 2 + 1]);
+                                        UVs.Add(uvPalette[(textIndex * 2)]);
+                                        UVs.Add(uvPalette[(textIndex * 2) + 1]);
                                     }
                                 }
                             }
