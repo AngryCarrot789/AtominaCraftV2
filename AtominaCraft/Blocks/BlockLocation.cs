@@ -66,7 +66,7 @@ namespace AtominaCraft.Blocks
 
         public BlockLocation GetWorldLocation(ChunkLocation chunk)
         {
-            return new BlockLocation((chunk.X << 4) + X, Y, (chunk.Z << 4) + Z);
+            return new BlockLocation((chunk.X * Chunk.Width) + X, Y, (chunk.Z * Chunk.Width) + Z);
         }
 
         public override bool Equals(object obj)

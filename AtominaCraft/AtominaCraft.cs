@@ -19,6 +19,7 @@ using AtominaCraft.Blocks.Rendering;
 using AtominaCraft.Worlds.Chunks.MeshGeneration;
 using System.Text;
 using System.IO;
+using AtominaCraft.BlockGrid;
 
 namespace AtominaCraft
 {
@@ -176,9 +177,9 @@ namespace AtominaCraft
             //Chunk chunk3 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0, -1), 2);
             //Chunk chunk4 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0,  0), 1);
 
-            for (int x = -1, total = 1; x <= 1; x++, total++)
+            for (int x = -2; x <= 2; x++)
             {
-                for (int z = 0; z <= 1; z++)
+                for (int z = -2, total = 1; z <= 2; z++, total++)
                 {
                     Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(x, z), total);
                     earth.Chunks.Add(chunk.Location, chunk);
@@ -258,21 +259,32 @@ namespace AtominaCraft
             Player.Camera.SetSize(Size.X, Size.Y, GameSettings.RENDER_NEAR_MIN, GameSettings.RENDER_FAR, GameSettings.RENDER_FOV);
             Player.Camera.UseViewport();
 
+            Player.World.Sky.Draw(Player.Camera);
+
             // mesh.Draw(Player.Camera);
 
             // less harsh on the GC than creating 100s of vectors every second
             foreach (Chunk chunk in Player.World.Chunks.Values)
             {
                 Tesselator.DrawChunkBBB(Player.Camera, chunk);
-                //Tesselator.DrawChunkMesh(Player.Camera, chunk, TestMesh);
                 DebugDraw.DrawChunk(Player.Camera, chunk);
+                //Tesselator.DrawChunkMesh(Player.Camera, chunk, TestMesh);
+                //DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
             }
 
+            DebugText.Clear();
+
+            if (Player.Chunk != null)
+            {
+                DebugDraw.DrawChunkCenterOutline(Player.Camera, Player.Chunk);
+            }
+
+            DebugText.WriteLine(Player.Position.ToString());
+
+            //DebugText.SetText(text);
             //GL.FrontFace(FrontFaceDirection.Cw);
             //obj.Draw(Player.Camera);
             //GL.FrontFace(FrontFaceDirection.Ccw);
-
-            //DebugText.Clear();
             //DebugText.WriteLine($"Player Position: {Player.Position}");
             //DebugText.WriteLine($"Player Look:     X: {Player.CameraRotationX}, Y: {Player.CameraRotationY}");
             //DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);

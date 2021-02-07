@@ -20,6 +20,11 @@ namespace AtominaCraft.ZResources.Windows
             label1.Text += text;
         }
 
+        public void SetText(string text)
+        {
+            label1.Text = text;
+        }
+
         public void Clear()
         {
             label1.Text = "";

@@ -22,8 +22,57 @@ namespace AtominaCraft.ZResources.Graphics
 
 		public static void DrawChunk(PlayerCamera camera, Chunk chunk)
         {
-			DrawCube(camera, GridLatch.WTMGetChunk(chunk.Location), GridLatch.ChunkScale, 1, 0.1f, 0.1f);
+			DrawCube(
+				camera, 
+				GridLatch.WTMGetChunk(chunk.Location), 
+				GridLatch.ChunkScale, 
+				1.0f, 
+				0.1f, 
+				0.1f);
         }
+
+		public static void DrawChunkCenterOutline(PlayerCamera camera, Chunk chunk, float r = 0.2f, float g = 0.8f, float b = 0.3f)
+        {
+			Vector3 position = GridLatch.WTMGetChunk(chunk.Location);
+			Matrix4 mvp = camera.Matrix() * Matrix4.CreateLocalToWorld(position, Vector3.Zero, GridLatch.ChunkScale);
+			Vector4 v1 = mvp * new Vector4( 1.0f, -1.0f,  0.0f, 1.0f);
+			Vector4 v2 = mvp * new Vector4( 1.0f,  1.0f,  0.0f, 1.0f);
+			Vector4 v3 = mvp * new Vector4( 0.0f, -1.0f, -1.0f, 1.0f);
+			Vector4 v4 = mvp * new Vector4( 0.0f,  1.0f, -1.0f, 1.0f);
+			Vector4 v5 = mvp * new Vector4(-1.0f, -1.0f,  0.0f, 1.0f);
+			Vector4 v6 = mvp * new Vector4(-1.0f,  1.0f,  0.0f, 1.0f);
+			Vector4 v7 = mvp * new Vector4( 0.0f, -1.0f,  1.0f, 1.0f);
+			Vector4 v8 = mvp * new Vector4( 0.0f,  1.0f,  1.0f, 1.0f);
+
+			GL.DepthFunc(DepthFunction.Lequal);
+			GL.UseProgram(0);
+
+			GL.LineWidth(2);
+
+			GL.Color3(r, g, b);
+			GL.Begin(PrimitiveType.LineLoop);
+			Vertex4(v1);
+			Vertex4(v2);
+			GL.End();
+
+			GL.Begin(PrimitiveType.LineLoop);
+			Vertex4(v3);
+			Vertex4(v4);
+			GL.End();
+
+			GL.Begin(PrimitiveType.LineLoop);
+			Vertex4(v5);
+			Vertex4(v6);
+			GL.End();
+
+			GL.Begin(PrimitiveType.LineLoop);
+			Vertex4(v7);
+			Vertex4(v8);
+			GL.End();
+
+			GL.DepthFunc(DepthFunction.Less);
+			GL.LineWidth(1);
+		}
 
 		public static void DrawAABB(PlayerCamera camera, AxisAlignedBB boundingBox)
 		{

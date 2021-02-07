@@ -1,16 +1,22 @@
-﻿using AtominaCraft.BlockGrid;
-using AtominaCraft.Blocks;
-using AtominaCraft.ZResources.Maths;
+﻿using AtominaCraft.Blocks;
 using System;
 using System.Collections.Generic;
-using System.Security.Policy;
 
 namespace AtominaCraft.Worlds.Chunks
 {
     public class Chunk
     {
-        public const int Height = 256;
-        public const int Width = 16;
+        //public const int Height = 256;
+        //public const int Width = 16;
+        //public const int IndexableHeight = 255;
+        //public const int IndexableWidth = 15;
+
+        // These are editable values btw. If the math breaks when changing these... something isnt right
+        public const int Height = 16;
+        public const int Width = 4;
+        public const int IndexableHeight = Height - 1;
+        public const int IndexableWidth = Width - 1;
+
         private static BlockLocation TemporarBlockLocation = new BlockLocation(null, 0, 0, 0);
 
         public ChunkLocation Location { get; set; }

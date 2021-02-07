@@ -11,6 +11,14 @@ namespace AtominaCraft.Worlds.Chunks.MeshGeneration
         /// </summary>
         public const int VBO_COUNT = 3;
 
+
+
+
+
+        // minecraft remake
+
+
+
         /// <summary>
         /// Stores an ID to the vertex arrays object (the object contains all the buffers)
         /// </summary>

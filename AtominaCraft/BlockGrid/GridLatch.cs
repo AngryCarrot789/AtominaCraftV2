@@ -9,21 +9,45 @@ namespace AtominaCraft.BlockGrid
     /// <summary>
     /// A class used for calculating 'matrix locations' (aka, locations used by transformation matrixes) 
     /// based on grid-latched 'world location', and vise versa, e.g. getting the world coordinates of a block, chunk locations, etc
+    /// 
+    /// <para>
+    ///     functions that return Matrixes/floats are normally called "WTM"; WorldToMatrix,
+    /// </para>
+    /// <para>
+    ///     functions that return integers are normally called "MTW"; MatrixToWorld.
+    /// </para>
+    /// <para>
+    ///     dont get confused for the "LocalToWorld", "CameraToMatrix" sort of functions... these are not those :)
+    /// </para>
     /// </summary>
     public static class GridLatch
     {
+        /// <summary>
+        /// The "Matrix" scale of a block, in theory the legnth starting at the center going to the edges
+        /// <para>
+        /// DONT EDIT THIS OTHERWISE THE ENTIRE WROLD WILL BREAK XDXDXDXD
+        /// </para>
+        /// </summary>
         public const float BLOCK_SCALE = 0.5f;
-        public const float BLOCK_SIZE = BLOCK_SCALE * 2;
+        /// <summary>
+        /// The total "length/size" of a block, in theory starting at the corners not the center
+        /// <para>
+        ///     This CANNOT be a decimal number. it must be an integral (aka "integer based") number because it does
+        /// </para>
+        /// </summary>
+        public const int BLOCK_SIZE = 1;
         public static Vector3 BlockScale = new Vector3(BLOCK_SCALE, BLOCK_SCALE, BLOCK_SCALE);
-        public static Vector3 ChunkScale = new Vector3(8, 128, 8);
+        public static Vector3 ChunkScale = new Vector3(Chunk.Width / 2, Chunk.Height / 2, Chunk.Width / 2);
 
 
         // Stops having to create 100000s of vectors per second
         private static BlockLocation TempB { get; set; }
+        private static ChunkLocation TempC { get; set; }
 
         static GridLatch()
         {
             TempB = new BlockLocation(0, 0, 0);
+            TempC = new ChunkLocation(0, 0);
         }
 
         /// <summary>
@@ -34,7 +58,7 @@ namespace AtominaCraft.BlockGrid
         /// <returns></returns>
         public static int GetBlockXZOffsetByChunk(int block, int chunk)
         {
-            return (chunk << 4) + block;
+            return (chunk * Chunk.Width) + block;
         }
 
         /// <summary>
@@ -60,9 +84,9 @@ namespace AtominaCraft.BlockGrid
         public static BlockLocation GetBlankChunkOffset(ChunkLocation chunkLocation)
         {
             TempB.Set(
-                chunkLocation.X << 4,
+                chunkLocation.X * Chunk.Width,
                 0,
-                chunkLocation.Z << 4);
+                chunkLocation.Z * Chunk.Width);
             return TempB;
         }
 
@@ -111,9 +135,9 @@ namespace AtominaCraft.BlockGrid
         public static Vector3 WTMGetChunk(int x, int z)
         {
             return new Vector3(
-                (x << 4) + (Chunk.Width / 2),
+                (x * Chunk.Width) + (Chunk.Width / 2),
                 Chunk.Height / 2,
-                (z << 4) + (Chunk.Width / 2));
+                (z * Chunk.Width) + (Chunk.Width / 2));
         }
 
         /// <summary>
@@ -123,10 +147,7 @@ namespace AtominaCraft.BlockGrid
         /// <returns></returns>
         public static Vector3 WTMGetChunk(ChunkLocation location)
         {
-            return new Vector3(
-                (location.X << 4) + (Chunk.Width / 2),
-                Chunk.Height / 2,
-                (location.Z << 4) + (Chunk.Width / 2));
+            return WTMGetChunk(location.X, location.Z);
         }
 
         //
@@ -140,11 +161,44 @@ namespace AtominaCraft.BlockGrid
         /// <returns></returns>
         public static BlockLocation MTWGetBlock(Vector3 pos)
         {
-            TempB.Set(
-                (int)Math.Floor(pos.X),
-                (int)Math.Floor(pos.Y),
-                (int)Math.Floor(pos.Z));
+            TempB.X = pos.X > 0 ? MTWGetPositiveNumber(pos.X) : (MTWGetNegativeNumber(pos.X) - BLOCK_SIZE);
+            TempB.Y = pos.Y > 0 ? MTWGetPositiveNumber(pos.Y) : (MTWGetNegativeNumber(pos.Y) - BLOCK_SIZE);
+            TempB.Z = pos.Z > 0 ? MTWGetPositiveNumber(pos.Z) : (MTWGetNegativeNumber(pos.Z) - BLOCK_SIZE);
             return TempB;
+        }
+
+        /// <summary>
+        /// Gets the world coordinates of a chunk from the Matrix location
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static ChunkLocation MTWGetChunk(Vector3 pos)
+        {
+            TempC.X = pos.X > 0 ? MTWGetChunkPositive(pos.X) : MTWGetChunkNegative(pos.X);
+            TempC.Z = pos.Z > 0 ? MTWGetChunkPositive(pos.Z) : MTWGetChunkNegative(pos.Z);
+            return TempC;
+        }
+
+        public static int MTWGetChunkPositive(float a)
+        {
+            return MTWGetPositiveNumber(a) / Chunk.Width;
+        }
+
+        // floor and ceil work weirdly with negative numbers. idk if 
+        // i should have to do '- Chunk.Width'... cant be botherd to fix it tho :))))
+        public static int MTWGetChunkNegative(float a)
+        {
+            return (MTWGetNegativeNumber(a) - Chunk.Width) / Chunk.Width;
+        }
+
+        public static int MTWGetPositiveNumber(float a)
+        {
+            return (int)MathF.Floor(a);
+        }
+
+        public static int MTWGetNegativeNumber(float a)
+        {
+            return (int)MathF.Ceiling(a);
         }
     }
 }

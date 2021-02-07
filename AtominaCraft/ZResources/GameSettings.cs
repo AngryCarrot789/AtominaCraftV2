@@ -39,12 +39,12 @@
         public const int RENDER_FBO_SIZE = 2048;
 
         // Gameplay
-        public static float MOUSE_SENSITIVITY        = 0.0013f;
-        public static float MOUSE_SMOOTHING          = 0.1f;
+        public static float MOUSE_SENSITIVITY = 0.0013f;
+        public static float MOUSE_SMOOTHING = 0.1f;
         /// <summary>
         /// This is a high value just because it is due to how movement works :(
         /// </summary>
-        public const float DEFAULT_WALK_ACCELERATION = 40.0f;
+        public static float DEFAULT_WALK_ACCELERATION { get => 70.0f; }
         public static float DEFAULT_FLY_SPEED        = 4.7f;
         public static float DEFAULT_WALK_SPEED       = 2.6f;
         public static float DEFAULT_SPRINT_SPEED     = 3.9f;

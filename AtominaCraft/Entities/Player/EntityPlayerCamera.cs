@@ -69,8 +69,9 @@ namespace AtominaCraft.Entities.Player
             Matrix4 camToWorld = Matrix4.CreateLocalToWorld(Position, Rotation, Scale) * Matrix4.RotationY(CameraRotationY);
             Vector3 lookDirection = camToWorld.MultiplyDirection(new Vector3(right, up, back)).Normalised();
             lookDirection.EnsureNormal();
-            Vector3 movement = lookDirection * GameSettings.DEFAULT_WALK_ACCELERATION;
-            AccelerateTowards(movement);
+            Vector3 movement = lookDirection * (GameSettings.DEFAULT_WALK_ACCELERATION * Delta.Time);
+            Velocity += movement;
+            //AccelerateTowards(movement);
         }
 
         public void Look(float x, float y)

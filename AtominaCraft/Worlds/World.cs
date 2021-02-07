@@ -1,5 +1,6 @@
 ﻿using AtominaCraft.BlockGrid;
 using AtominaCraft.Blocks;
+using AtominaCraft.Collision;
 using AtominaCraft.Entities.Player;
 using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.Worlds.Weather;
@@ -11,7 +12,7 @@ namespace AtominaCraft.Worlds
 {
     public class World
     {
-        //public Sky Sky { get; set; }
+        public Sky Sky { get; set; }
 
         public string Name { get; set; }
 
@@ -21,7 +22,7 @@ namespace AtominaCraft.Worlds
 
         public World()
         {
-            //Sky = new Sky();
+            Sky = new Sky();
             Name = "world";
             Chunks = new Dictionary<ChunkLocation, Chunk>();
         }
@@ -33,6 +34,31 @@ namespace AtominaCraft.Worlds
             {
                 chunk.Update();
             }
+
+            // Calculate collisions
+
+            //if (MainPlayer.Chunk == null)
+            //    return;
+            //
+            //foreach(Block block in MainPlayer.Chunk.Blocks.Values)
+            //{
+            //    AxisAlignedBB blockAabb = block.BoundingBox;
+            //    AxisAlignedBB playerAabb = MainPlayer.BoundingBox;
+            //
+            //    if (playerAabb.IntersectsAABB(blockAabb))
+            //    {
+            //        Vector3 intersectAmount = new Vector3()
+            //        {
+            //            X = playerAabb.IntersectionAmountX(blockAabb, false), // ye
+            //            Y = playerAabb.IntersectionAmountY(blockAabb, false), // ye
+            //            Z = playerAabb.IntersectionAmountZ(blockAabb, false), // ye
+            //        };
+            //
+            //        Vector3 difference = MainPlayer.Position - MainPlayer.PreviousPosition;
+            //
+            //        MainPlayer.MoveTowards(-difference);
+            //    }
+            //}
         }
 
         public Chunk GetChunkAt(int x, int z)

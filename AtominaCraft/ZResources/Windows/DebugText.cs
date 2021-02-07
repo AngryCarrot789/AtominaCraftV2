@@ -40,5 +40,18 @@ namespace AtominaCraft.ZResources.Windows
                 catch { }
             }
         }
+
+        public static void SetText(string text)
+        {
+            if (CanWrite)
+            {
+                try
+                {
+                    Action write = () => { Window.SetText(text); };
+                    Window.Invoke(write);
+                }
+                catch { }
+            }
+        }
     }
 }

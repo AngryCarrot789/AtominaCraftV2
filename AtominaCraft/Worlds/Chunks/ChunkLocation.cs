@@ -31,5 +31,10 @@ namespace AtominaCraft.Worlds.Chunks
                 location.X.Equals(X) && 
                 location.Z.Equals(Z);
         }
+
+        public override string ToString()
+        {
+            return $"X: {X}, Z: {Z}";
+        }
     }
 }

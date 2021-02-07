@@ -4,6 +4,7 @@ using AtominaCraft.Worlds;
 using System.ComponentModel.DataAnnotations;
 using AtominaCraft.Worlds.Chunks;
 using System;
+using AtominaCraft.BlockGrid;
 
 namespace AtominaCraft.Entities
 {
@@ -55,10 +56,8 @@ namespace AtominaCraft.Entities
             Velocity *= (1.0f - 0.05f);
             Position += (Velocity * Delta.Time);
             UpdateAABBPosition();
-            Chunk = 
-                World.GetChunkAt(
-                    (int)Math.Floor(Position.X) >> 4, 
-                    (int)Math.Floor(Position.Z) >> 4);
+
+            Chunk = World.GetChunkAt(GridLatch.MTWGetChunk(Position));
         }
 
         public void UpdateAABBPosition()
