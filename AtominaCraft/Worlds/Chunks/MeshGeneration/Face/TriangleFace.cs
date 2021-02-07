@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using AtominaCraft.Worlds.Generator.Mesh;
+using System.Collections.Generic;
 
 namespace AtominaCraft.Worlds.Chunks.MeshGeneration.Face
 {
     public struct TriangleFace
     {
-        public Vertex3f V1;
-        public Vertex3f V2;
-        public Vertex3f V3;
+        public Vertex3 V1;
+        public Vertex3 V2;
+        public Vertex3 V3;
         public Vertex2f VT1;
         public Vertex2f VT2;
         public Vertex2f VT3;
 
-        public TriangleFace(Vertex3f v1, Vertex3f v2, Vertex3f v3, Vertex2f vt1, Vertex2f vt2, Vertex2f vt3)
+        public TriangleFace(Vertex3 v1, Vertex3 v2, Vertex3 v3, Vertex2f vt1, Vertex2f vt2, Vertex2f vt3)
         {
             V1 = v1;
             V2 = v2;

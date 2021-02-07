@@ -16,8 +16,8 @@ namespace AtominaCraft.Blocks
         //public static readonly Block Dirt = new Block(null, new BlockLocation(0, 0, 0), 4);
 
         public int ID { get; set; }
-        public float Hardness { get; set; }
-        public float Resistance { get; set; }
+        //public float Hardness { get; set; }
+        //public float Resistance { get; set; }
         public bool IsTransparent { get; set; }
         public bool ShouldRender { get; set; }
 
@@ -27,14 +27,14 @@ namespace AtominaCraft.Blocks
         public BlockLocation Location { get; set; }
         public World World { get; set; }
 
-        public Block(World world, BlockLocation location, int id = (int)TextureTypes.Dirt, float hardness = 0, float resistance = 0, bool isTransparent = false)
+        public Block(World world, BlockLocation location, int id = (int)TextureTypes.Dirt, bool isTransparent = false)
         {
             ShouldRender = true;
             World = world;
             Location = location;
             ID = id;
-            Hardness = hardness;
-            Resistance = resistance;
+            //Hardness = hardness;
+            //Resistance = resistance;
             IsTransparent = isTransparent;
             if (location != null && location.Chunk != null)
             {
@@ -58,8 +58,8 @@ namespace AtominaCraft.Blocks
                         block.Location.Y,
                         block.Location.Z),
                     block.ID,
-                    block.Hardness,
-                    block.Resistance,
+                    //block.Hardness,
+                    //block.Resistance,
                     block.IsTransparent)
                 {
                     BoundingBox = block.BoundingBox

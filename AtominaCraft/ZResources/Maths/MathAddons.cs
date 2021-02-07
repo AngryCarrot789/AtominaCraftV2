@@ -41,6 +41,13 @@ namespace AtominaCraft.ZResources.Maths
                 Clamp(vec.Z, min, max));
         }
 
+        public static void ClampInstance(this Vector3 vector, float min, float max)
+        {
+            vector.X = Clamp(vector.X, min, max);
+            vector.Y = Clamp(vector.Y, min, max);
+            vector.Z = Clamp(vector.Z, min, max);
+        }
+
         /// <summary>
         /// Looks at both value1 and value2 and returns the smallest one. so Min(4, 6) returns 4
         /// </summary>
@@ -161,6 +168,12 @@ namespace AtominaCraft.ZResources.Maths
                 y / GameSettings.DEG_TO_RAD_CONST, 
                 z / GameSettings.DEG_TO_RAD_CONST);
         }
+
+        public static float DegreesToEuler(float a)
+        {
+            return a / GameSettings.DEG_TO_RAD_CONST;
+        }
+
 
         public static Vector3 DegreesToEuler(this Vector3 degrees)
         {

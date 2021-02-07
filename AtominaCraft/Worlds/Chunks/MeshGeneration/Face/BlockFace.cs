@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AtominaCraft.Worlds.Generator.Mesh;
+using System.Collections.Generic;
 
 namespace AtominaCraft.Worlds.Chunks.MeshGeneration.Face
 {
@@ -62,14 +63,14 @@ namespace AtominaCraft.Worlds.Chunks.MeshGeneration.Face
 
 
 
-        public static Vertex3f V1 = new Vertex3f( 1.0f,  1.0f, -1.0f);
-        public static Vertex3f V2 = new Vertex3f( 1.0f, -1.0f, -1.0f);
-        public static Vertex3f V3 = new Vertex3f( 1.0f,  1.0f,  1.0f);
-        public static Vertex3f V4 = new Vertex3f( 1.0f, -1.0f,  1.0f);
-        public static Vertex3f V5 = new Vertex3f(-1.0f,  1.0f, -1.0f);
-        public static Vertex3f V6 = new Vertex3f(-1.0f, -1.0f, -1.0f);
-        public static Vertex3f V7 = new Vertex3f(-1.0f,  1.0f,  1.0f);
-        public static Vertex3f V8 = new Vertex3f(-1.0f, -1.0f,  1.0f);
+        public static Vertex3 V1 = new Vertex3( 1.0f,  1.0f, -1.0f);
+        public static Vertex3 V2 = new Vertex3( 1.0f, -1.0f, -1.0f);
+        public static Vertex3 V3 = new Vertex3( 1.0f,  1.0f,  1.0f);
+        public static Vertex3 V4 = new Vertex3( 1.0f, -1.0f,  1.0f);
+        public static Vertex3 V5 = new Vertex3(-1.0f,  1.0f, -1.0f);
+        public static Vertex3 V6 = new Vertex3(-1.0f, -1.0f, -1.0f);
+        public static Vertex3 V7 = new Vertex3(-1.0f,  1.0f,  1.0f);
+        public static Vertex3 V8 = new Vertex3(-1.0f, -1.0f,  1.0f);
 
         public static Vertex2f VT1  = new Vertex2f( 2.0f,  0.0f);
         public static Vertex2f VT2  = new Vertex2f( 1.0f,  1.0f);

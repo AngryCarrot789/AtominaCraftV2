@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace AtominaCraft.Worlds.Chunks.MeshGeneration.Face
+namespace AtominaCraft.Worlds.Generator.Mesh
 {
-    public struct Vertex3f
+    public struct Vertex3
     {
         public float X, Y, Z;
-        public Vertex3f(float x, float y, float z)
+        public Vertex3(float x, float y, float z)
         {
             X = x;
             Y = y;

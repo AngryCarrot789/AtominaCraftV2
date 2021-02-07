@@ -14,12 +14,7 @@ using OpenTK.Windowing.Common;
 using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.ZResources.Windows;
 using Forms = System.Windows.Forms;
-using AtominaCraft.Worlds.Chunks.MeshGeneration.Face;
-using AtominaCraft.Blocks.Rendering;
-using AtominaCraft.Worlds.Chunks.MeshGeneration;
-using System.Text;
-using System.IO;
-using AtominaCraft.BlockGrid;
+using AtominaCraft.ZResources.Controls;
 
 namespace AtominaCraft
 {
@@ -34,14 +29,38 @@ namespace AtominaCraft
         public bool IsRunning { get; set; }
         public bool DrawDebug { get; set; }
 
+        private ToggleButton FullscreenToggle { get; set; }
+        private ToggleButton CursorGrappedToggle { get; set; }
+
         public AtominaCraft(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) :
             base(gameWindowSettings, nativeWindowSettings)
         {
             Instance = this;
         }
 
-        public bool Initialise()
+        public bool InitialiseGameWindow()
         {
+            FullscreenToggle = new ToggleButton((isToggled) =>
+            {
+                if (isToggled) 
+                    WindowState = WindowState.Fullscreen; 
+                else 
+                    WindowState = WindowState.Normal;
+            });
+            CursorGrappedToggle = new ToggleButton((isToggled) =>
+            {
+                if (isToggled)
+                {
+                    CursorVisible = true;
+                    CursorGrabbed = false;
+                }
+                else
+                {
+                    CursorVisible = false;
+                    CursorGrabbed = true;
+                }
+            });
+
             Size = new OpenTK.Mathematics.Vector2i(1280, 720);
             IsRunning = false;
             LogManager.Initialise();
@@ -94,8 +113,6 @@ namespace AtominaCraft
                 base.Run();
             }
         }
-
-        //private ChunkMesh TestMesh;
 
         protected override void OnLoad()
         {
@@ -186,23 +203,6 @@ namespace AtominaCraft
                 }
             }
 
-            //Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(0, 0), 1);
-            //earth.Chunks.Add(chunk.Location, chunk);
-            //
-            //TestMesh = ChunkMeshGenerator.GenerateChunk(chunk);
-            //
-            //StringBuilder sb = new StringBuilder(10000000);
-            //
-            //for (int i = 0; i < TestMesh.Vertices.Count; i += 3)
-            //{
-            //    float vertex1 = (float)TestMesh.Vertices[i + 0];
-            //    float vertex2 = (float)TestMesh.Vertices[i + 1];
-            //    float vertex3 = (float)TestMesh.Vertices[i + 2];
-            //    sb.AppendLine($"v {vertex1} {vertex2} {vertex3}");
-            //}
-            //
-            //File.WriteAllText(@"C:\Users\kettl\Desktop\suckoff1.txt", sb.ToString());
-
             //ChunkMeshGenerator.GenerateChunk(chunk);
             //earth.Chunks.Add(chunk1.Location, chunk1);
             //earth.Chunks.Add(chunk2.Location, chunk2);
@@ -235,9 +235,25 @@ namespace AtominaCraft
                 }
 
                 if (KeyboardState.IsKeyPressed(Keys.E))
+                    CursorGrappedToggle.ButtonDown();
+                else
+                    CursorGrappedToggle.ButtonUp();
+
+                if (KeyboardState.IsKeyDown(Keys.F))
+                    FullscreenToggle.ButtonDown();
+                else
+                    FullscreenToggle.ButtonUp();
+
+                // Day/night
+                if (KeyboardState.IsKeyDown(Keys.I))
                 {
-                    CursorVisible = true;
-                    CursorGrabbed = false;
+                    Player.World.Sky.SkyColour += 0.002f;
+                    Player.World.Sky.SkyColour.ClampInstance(0.1f, 1.0f);
+                }
+                if (KeyboardState.IsKeyDown(Keys.K))
+                {
+                    Player.World.Sky.SkyColour -= 0.002f;
+                    Player.World.Sky.SkyColour.ClampInstance(0.1f, 1.0f);
                 }
 
                 Player.World.Update();

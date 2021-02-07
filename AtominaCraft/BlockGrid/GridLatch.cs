@@ -7,18 +7,18 @@ using System;
 namespace AtominaCraft.BlockGrid
 {
     /// <summary>
-    /// A class used for calculating 'matrix locations' (aka, locations used by transformation matrixes) 
-    /// based on grid-latched 'world location', and vise versa, e.g. getting the world coordinates of a block, chunk locations, etc
+    ///     A class used for calculating 'matrix locations' (aka, locations used by transformation matrixes) 
+    ///     based on grid-latched 'world location', and vise versa, e.g. getting the world coordinates of a block, chunk locations, etc
     /// 
-    /// <para>
-    ///     functions that return Matrixes/floats are normally called "WTM"; WorldToMatrix,
-    /// </para>
-    /// <para>
-    ///     functions that return integers are normally called "MTW"; MatrixToWorld.
-    /// </para>
-    /// <para>
-    ///     dont get confused for the "LocalToWorld", "CameraToMatrix" sort of functions... these are not those :)
-    /// </para>
+    ///     <para>
+    ///         functions that return Matrixes/floats are normally called "WTM"; WorldToMatrix,
+    ///     </para>
+    ///     <para>
+    ///         functions that return integers are normally called "MTW"; MatrixToWorld.
+    ///     </para>
+    ///     <para>
+    ///         dont get confused for the "LocalToWorld", "CameraToMatrix" sort of functions... these are not those :)
+    ///     </para>
     /// </summary>
     public static class GridLatch
     {

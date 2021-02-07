@@ -33,7 +33,7 @@ namespace AtominaCraft
 
             using (AtominaCraft atominaCraft = new AtominaCraft(gws, nws))
             {
-                atominaCraft.Initialise();
+                atominaCraft.InitialiseGameWindow();
                 atominaCraft.RunGameLoop();
             }
         }
