@@ -15,6 +15,10 @@ using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.ZResources.Windows;
 using Forms = System.Windows.Forms;
 using AtominaCraft.ZResources.Controls;
+using AtominaCraft.ZLaunch;
+using AtominaCraft.Client.BlockRendering.Mesh;
+using AtominaCraft.Client.BlockRendering.Mesh.Generator;
+using AtominaCraft.Client.BlockRendering;
 
 namespace AtominaCraft
 {
@@ -63,11 +67,12 @@ namespace AtominaCraft
 
             Size = new OpenTK.Mathematics.Vector2i(1280, 720);
             IsRunning = false;
-            LogManager.Initialise();
+
+            UtilityLauncher.PreOpenGLLaunch();
+
             if (InitialiseOpenGL())
             {
-                DebugDraw.Initialise();
-
+                UtilityLauncher.AfterOpenGLLaunch();
                 LogManager.OpenGLLogger.Log("Successfully initialised Game Engine");
                 return true;
             }
@@ -92,7 +97,8 @@ namespace AtominaCraft
                 GL.DepthFunc(DepthFunction.Less);
                 GL.DepthMask(true);
 
-                GraphicsLoader.Load();
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                //GL.ShadeModel(ShadingModel.Smooth);
 
                 LogManager.OpenGLLogger.Log("Successfully initialised GLFW and OpenGL");
                 return true;
@@ -109,6 +115,7 @@ namespace AtominaCraft
             if (!IsRunning)
             {
                 IsRunning = true;
+                UtilityLauncher.PreGameLoopLaunch();
                 Console.WriteLine("Starting Game Loop");
                 base.Run();
             }
@@ -194,20 +201,26 @@ namespace AtominaCraft
             //Chunk chunk3 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0, -1), 2);
             //Chunk chunk4 = ChunkGenerator.GenerateFlat(earth, new ChunkLocation( 0,  0), 1);
 
-            for (int x = -2; x <= 2; x++)
+            /*
+             * 
+             * 
+             *          Chunk block generators
+             *          generates blocks... in a chunk :)))
+             *          you could manually do them too
+             * 
+             * 
+             */
+            for (int x = -1; x <= 1; x++)
             {
-                for (int z = -2, total = 1; z <= 2; z++, total++)
+                for (int z = -1, total = 1; z <= 1; z++, total++)
                 {
-                    Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(x, z), total);
+                    Chunk chunk = ChunkGenerator.GenerateFlatGaps(earth, new ChunkLocation(x, z), 8, x + 3, z + 3);
+                    //Chunk chunk = ChunkGenerator.GenerateFlat(earth, new ChunkLocation(x, z), 1);
+                    BlockMeshGenerator.GenerateChunk(chunk);
                     earth.Chunks.Add(chunk.Location, chunk);
                 }
             }
 
-            //ChunkMeshGenerator.GenerateChunk(chunk);
-            //earth.Chunks.Add(chunk1.Location, chunk1);
-            //earth.Chunks.Add(chunk2.Location, chunk2);
-            //earth.Chunks.Add(chunk3.Location, chunk3);
-            //earth.Chunks.Add(chunk4.Location, chunk4);
             Worlds.Add(earth);
 
             Inputs.Keyboard = KeyboardState;
@@ -218,6 +231,8 @@ namespace AtominaCraft
 
             base.OnLoad();
         }
+
+        GameObject cube;
 
         public void UpdateGame()
         {
@@ -239,7 +254,7 @@ namespace AtominaCraft
                 else
                     CursorGrappedToggle.ButtonUp();
 
-                if (KeyboardState.IsKeyDown(Keys.F))
+                if (KeyboardState.IsKeyDown(Keys.F11))
                     FullscreenToggle.ButtonDown();
                 else
                     FullscreenToggle.ButtonUp();
@@ -279,23 +294,24 @@ namespace AtominaCraft
 
             // mesh.Draw(Player.Camera);
 
-            // less harsh on the GC than creating 100s of vectors every second
             foreach (Chunk chunk in Player.World.Chunks.Values)
             {
-                Tesselator.DrawChunkBBB(Player.Camera, chunk);
+                //Tesselator.DrawChunkBBB(Player.Camera, chunk);
+                Tesselator.DrawChunkBlocks(Player.Camera, chunk);
                 DebugDraw.DrawChunk(Player.Camera, chunk);
                 //Tesselator.DrawChunkMesh(Player.Camera, chunk, TestMesh);
                 //DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
             }
 
+            //cube.Draw(Player.Camera);
             DebugText.Clear();
+            DebugText.WriteLine($"Player pos:   {Player.Position}");
+            DebugText.WriteLine($"Player chunk: {Player.Chunk?.Location?.ToString()}");
 
-            if (Player.Chunk != null)
-            {
-                DebugDraw.DrawChunkCenterOutline(Player.Camera, Player.Chunk);
-            }
-
-            DebugText.WriteLine(Player.Position.ToString());
+            //if (Player.Chunk != null)
+            //{
+            //    DebugDraw.DrawChunkCenterOutline(Player.Camera, Player.Chunk);
+            //}
 
             //DebugText.SetText(text);
             //GL.FrontFace(FrontFaceDirection.Cw);
@@ -304,15 +320,15 @@ namespace AtominaCraft
             //DebugText.WriteLine($"Player Position: {Player.Position}");
             //DebugText.WriteLine($"Player Look:     X: {Player.CameraRotationX}, Y: {Player.CameraRotationY}");
             //DebugDraw.DrawAABB(Player.Camera, Player.BoundingBox);
-            DebugDraw.DrawXYZ(Player.Camera.Projection, Player.CameraRotationY, Player.CameraRotationX);
+            //DebugDraw.DrawXYZ(Player.Camera.Projection, Player.CameraRotationY, Player.CameraRotationX);
 
             Context.SwapBuffers();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
-            Delta.Time = (float)args.Time;
             UpdateGame();
+            Delta.Time = (float)args.Time;
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)

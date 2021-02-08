@@ -1,13 +1,8 @@
-using AtominaCraft.Worlds.Chunks.MeshGeneration.Face;
 using AtominaCraft.ZResources;
 using AtominaCraft.ZResources.Windows;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
 
 namespace AtominaCraft
 {

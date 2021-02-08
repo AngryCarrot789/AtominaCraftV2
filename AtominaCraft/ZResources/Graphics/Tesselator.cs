@@ -1,22 +1,19 @@
 ﻿using AtominaCraft.BlockGrid;
 using AtominaCraft.Blocks;
-using AtominaCraft.Blocks.Rendering;
+using AtominaCraft.Client.BlockRendering;
+using AtominaCraft.Client.BlockRendering.Mesh;
 using AtominaCraft.Entities.Player;
-using AtominaCraft.Worlds;
 using AtominaCraft.Worlds.Chunks;
-using AtominaCraft.Worlds.Chunks.MeshGeneration;
 using AtominaCraft.ZResources.Maths;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AtominaCraft.ZResources.Graphics
 {
     public static class Tesselator
     {
         public static GameObject Cube { get; set; }
-
-        private static Shader ChunkShader { get; set; }
-        private static Texture ChunkTexture { get; set; }
+        public static BlockObject BlockObject { get; set; }
 
         static Tesselator()
         {
@@ -24,22 +21,13 @@ namespace AtominaCraft.ZResources.Graphics
             Cube.Shader = GraphicsLoader.TextureShader;
             Cube.Mesh = GraphicsLoader.Cube;
 
-            ChunkShader = GraphicsLoader.TextureShader;
-            ChunkTexture = BlockTextureLinker.TextureMap[BlockTextureLinker.GetTextureNameFromID(4)];
+            BlockObject = new BlockObject();
+            BlockObject.Shader = GraphicsLoader.TextureShader;
+            BlockObject.Mesh = new CubeMesh(Cube.Mesh.Vertices, Cube.Mesh.UVs, Cube.Mesh.Normals);
+            BlockObject.Texture = TextureMap.GetTexture("dirt");
         }
 
         public static List<float> BlockUVs;
-
-        public static void DrawChunkMesh(PlayerCamera camera, Chunk chunk, ChunkMesh mesh)
-        {
-            Vector3 position = GridLatch.WTMGetChunk(chunk.Location);
-            Matrix4 mv = Matrix4.CreateWorldToLocal(position, Vector3.Zero, GridLatch.ChunkScale).Transposed();
-            Matrix4 mvp = camera.Matrix() * Matrix4.CreateLocalToWorld(position, Vector3.Zero, GridLatch.ChunkScale);
-            ChunkTexture.Use();
-            ChunkShader.Use();
-            ChunkShader.SetMatrix(mvp, mv);
-            mesh.Draw();
-        }
 
         public static void DrawChunkBBB(PlayerCamera camera, Chunk chunk)
         {
@@ -63,15 +51,27 @@ namespace AtominaCraft.ZResources.Graphics
             }
         }
 
+        public static void DrawChunkBlocks(PlayerCamera camera, Chunk chunk)
+        {
+            foreach (KeyValuePair<Block, CubeMesh> pair in WorldMeshMap.GetChunkCubeMeshMap(chunk))
+            {
+                if (pair.Key.ShouldRender)
+                {
+                    BlockObject.Mesh = pair.Value;
+                    BlockObject.Texture = TextureMap.GetTextureFromID(pair.Key.ID);
+                    BlockObject.Position = GridLatch.WTMGetWorldBlock(chunk.Location, pair.Key.Location);
+                    BlockObject.Draw(camera);
+                }
+            }
+        }
 
         public static void DrawBlock(Block block, int x, int y, int z, PlayerCamera camera)
         {
-            string textureName = BlockTextureLinker.GetTextureNameFromID(block.ID);
+            string textureName = TextureMap.GetTextureNameFromID(block.ID);
             if (textureName == "")
                 return;
 
-            BlockTextureLinker.TextureMap.TryGetValue(textureName, out Texture texture);
-
+            Texture texture = TextureMap.GetTexture(textureName);
             Cube.Texture = texture;
             Cube.Position = GridLatch.WTMGetBlock(x, y, z);
             Cube.Draw(camera);

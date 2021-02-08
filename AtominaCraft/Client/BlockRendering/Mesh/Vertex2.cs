@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AtominaCraft.Worlds.Generator.Mesh
+namespace AtominaCraft.Client.BlockRendering.Mesh
 {
     public struct Vertex2
     {

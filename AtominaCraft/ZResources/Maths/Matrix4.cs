@@ -62,6 +62,24 @@ namespace AtominaCraft.ZResources.Maths
                 Scale(scale);
         }
 
+        public void WorldToLocal(Vector3 position, Vector3 euler, Vector3 scale)
+        {
+            MakeScale(1.0f / scale);
+            MakeRotationZ(-euler.Z);
+            MakeRotationX(-euler.X);
+            MakeRotationY(-euler.Y);
+            MakeTranslation(-position);
+        }
+
+        public void LocalToWorld(Vector3 position, Vector3 euler, Vector3 scale)
+        {
+            MakeTranslation(position);
+            MakeRotationY(euler.Y);
+            MakeRotationX(euler.X);
+            MakeRotationZ(euler.Z);
+            MakeScale(scale);
+        }
+
         /// <summary>
         /// Creates an identity matrix, containing a diagonal line of 1s, rest 0s.
         /// </summary>

@@ -1,19 +1,18 @@
 ﻿using AtominaCraft.BlockGrid;
-using AtominaCraft.Blocks.Rendering;
 using AtominaCraft.Collision;
 using AtominaCraft.Worlds;
-using AtominaCraft.ZResources.Maths;
 using System;
-using System.Runtime.CompilerServices;
 
 namespace AtominaCraft.Blocks
 {
     public class Block
     {
-        //public static readonly Block Empty = new Block(null, new BlockLocation(0, 0, 0), 0);
-        //public static readonly Block Gold = new Block(null, new BlockLocation(0, 0, 0), 3);
-        //public static readonly Block Electromagnet = new Block(null, new BlockLocation(0, 0, 0), 6);
-        //public static readonly Block Dirt = new Block(null, new BlockLocation(0, 0, 0), 4);
+        // Template blocks... these should never directly be used, they should be copied
+        public static readonly Block Air           = new Block(0, true);
+        public static readonly Block Dirt          = new Block(1, false);
+        public static readonly Block Gold          = new Block(2, false);
+        public static readonly Block Snow          = new Block(3, false);
+        public static readonly Block Electromagnet = new Block(4, false);
 
         public int ID { get; set; }
         //public float Hardness { get; set; }
@@ -27,7 +26,7 @@ namespace AtominaCraft.Blocks
         public BlockLocation Location { get; set; }
         public World World { get; set; }
 
-        public Block(World world, BlockLocation location, int id = (int)TextureTypes.Dirt, bool isTransparent = false)
+        public Block(World world, BlockLocation location, int id = 1, bool isTransparent = false)
         {
             ShouldRender = true;
             World = world;
@@ -36,11 +35,19 @@ namespace AtominaCraft.Blocks
             //Hardness = hardness;
             //Resistance = resistance;
             IsTransparent = isTransparent;
-            if (location != null && location.Chunk != null)
+            if (location.Chunk != null)
             {
                 BlockLocation blockLocation = GridLatch.GetBlockOffsetByChunk(location, location.Chunk.Location);
                 BoundingBox = new AxisAlignedBB(blockLocation);
             }
+        }
+
+        private Block(int id = 0, bool isTransparent = false)
+        {
+            ShouldRender = true;
+            ID = id;
+            IsTransparent = isTransparent;
+            BoundingBox = new AxisAlignedBB();
         }
 
         public bool IsEmpty()
@@ -48,18 +55,21 @@ namespace AtominaCraft.Blocks
             return ID == 0;
         }
 
-        public static Block CreateCopy(Block block, bool copyMetadata)
+        /// <summary>
+        /// Creates a copy of the block, copying all the block data over (AABB, id, etc), with the optional ability to copy metadate
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="world"></param>
+        /// <param name="location"></param>
+        /// <param name="copyMetadata"></param>
+        /// <returns></returns>
+        public static Block CreateCopy(Block block, World world, BlockLocation location, bool copyMetadata = true)
         {
             Block newBlock =
                 new Block(
-                    block.World,
-                    new BlockLocation(
-                        block.Location.X,
-                        block.Location.Y,
-                        block.Location.Z),
+                    world,
+                    location,
                     block.ID,
-                    //block.Hardness,
-                    //block.Resistance,
                     block.IsTransparent)
                 {
                     BoundingBox = block.BoundingBox

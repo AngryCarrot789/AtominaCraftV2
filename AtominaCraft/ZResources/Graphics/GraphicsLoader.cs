@@ -1,8 +1,5 @@
-﻿using AtominaCraft.Blocks.Rendering;
-using System;
-using System.Collections.Generic;
+﻿using AtominaCraft.Client.BlockRendering;
 using System.IO;
-using System.Text;
 
 namespace AtominaCraft.ZResources.Graphics
 {
@@ -15,10 +12,67 @@ namespace AtominaCraft.ZResources.Graphics
 
         public static void Load()
         {
-            BlockTextureLinker.LoadTextures();
+            TextureMap.Initialise();
 
-            Cube = new Mesh(Path.Combine(ResourceLocator.GetMeshesDirectory(), "cube.obj"));
-            Quad = new Mesh(Path.Combine(ResourceLocator.GetMeshesDirectory(), "quad.obj"));
+            string[] cubeObject = new string[]
+            {
+                "v -1.0 -1.00  1.0\n",
+                "v -1.0  1.00  1.0\n",
+                "v -1.0 -1.00 -1.0\n",
+                "v -1.0  1.00 -1.0\n",
+                "v  1.0 -1.00  1.0\n",
+                "v  1.0  1.00  1.0\n",
+                "v  1.0 -1.00 -1.0\n",
+                "v  1.0  1.00 -1.0\n",
+                "\n",
+                "vt -2.0 0.0\n",
+                "vt -1.0 1.0\n",
+                "vt -2.0 1.0\n",
+                "vt -1.0 0.0\n",
+                "vt 0.0  1.0\n",
+                "vt 0.0  0.0\n",
+                "vt 1.0  1.0\n",
+                "vt 1.0  0.0\n",
+                "vt 2.0  1.0\n",
+                "vt 1.0  2.0\n",
+                "vt 0.0  2.0\n",
+                "vt 0.0 -1.0\n",
+                "vt 2.0  0.0\n",
+                "vt 1.0 -1.0\n",
+                "\n",
+                "s off\n",
+                "f 2/1 3/2 1/3\n",
+                "f 4/4 7/5 3/2\n",
+                "f 8/6 5/7 7/5\n",
+                "f 6/8 1/9 5/7\n",
+                "f 7/5 1/10 3/11\n",
+                "f 4/12 6/8 8/6\n",
+                "f 2/1 4/4 3/2\n",
+                "f 4/4 8/6 7/5\n",
+                "f 8/6 6/8 5/7\n",
+                "f 6/8 2/13 1/9\n",
+                "f 7/5 5/7 1/10\n",
+                "f 4/12 2/14 6/8\n"
+            };
+
+            string[] quadObject = new string[]
+            {
+                "v 1 1 0\n",
+                "v -1 1 0\n",
+                "v -1 -1 0\n",
+                "v 1 -1 0\n",
+                "\n",
+                "vt 1 1 0\n",
+                "vt 0 1 0\n",
+                "vt 0 0 0\n",
+                "vt 1 0 0\n",
+                "\n",
+                "f 1/1 2/2 3/3\n",
+                "f 1/1 3/3 4/4\n"
+            };
+
+            Cube = new Mesh(cubeObject);
+            Quad = new Mesh(quadObject);
 
             string textureV =
                 "#version 460\n" +

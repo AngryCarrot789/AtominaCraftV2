@@ -34,9 +34,9 @@ namespace AtominaCraft.Collision
             Set(block.X,
                 block.Y,
                 block.Z,
-                block.X + GridLatch.BLOCK_SIZE,
-                block.Y + GridLatch.BLOCK_SIZE,
-                block.Z + GridLatch.BLOCK_SIZE);
+                block.X + GridLatch.BlockWidth,
+                block.Y + GridLatch.BlockWidth,
+                block.Z + GridLatch.BlockWidth);
         }
 
         public void Set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)

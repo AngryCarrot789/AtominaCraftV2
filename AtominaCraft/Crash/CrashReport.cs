@@ -2,6 +2,9 @@
 
 namespace AtominaCraft.Crash
 {
+    /// <summary>
+    /// Used to give information on what crashed the game
+    /// </summary>
     public class CrashReport
     {
         public Exception Exception { get; set; }

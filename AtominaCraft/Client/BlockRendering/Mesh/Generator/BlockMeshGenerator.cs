@@ -1,12 +1,15 @@
-﻿using AtominaCraft.Blocks;
-using AtominaCraft.Worlds.Chunks.MeshGeneration.Face;
+﻿using AtominaCraft.BlockGrid;
+using AtominaCraft.Blocks;
+using AtominaCraft.Worlds.Chunks;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace AtominaCraft.Worlds.Chunks.MeshGeneration
+namespace AtominaCraft.Client.BlockRendering.Mesh.Generator
 {
-    public static class ChunkMeshGenerator
+    public static class BlockMeshGenerator
     {
         public struct BlockFaceVisibility
         {
@@ -22,38 +25,46 @@ namespace AtominaCraft.Worlds.Chunks.MeshGeneration
             }
         }
 
-        public static ChunkMesh GenerateChunk(Chunk chunk)
+        public static void GenerateChunk(Chunk chunk)
         {
-            List<float> vertices = new List<float>();
-            List<float> uvs = new List<float>();
-            List<float> normals = new List<float>();
+            Dictionary<Block, CubeMesh> blockMeshes = new Dictionary<Block, CubeMesh>(chunk.Blocks.Count);
+            List<float> vertices = new List<float>(108);
+            List<float> uvs = new List<float>(108);
+            List<float> normals = new List<float>(108);
 
-            for(int y = 0; y < Chunk.Height; y++)
+            for (int y = 0; y < GridLatch.ChunkHeight; y++)
             {
-                for (int x = 0; x < Chunk.Width; x++)
+                for (int x = 0; x < GridLatch.ChunkWidth; x++)
                 {
-                    for (int z = 0; z < Chunk.Width; z++)
+                    for (int z = 0; z < GridLatch.ChunkWidth; z++)
                     {
                         Block block = chunk.GetBlockAt(x, y, z);
                         if (block == null) continue;
 
-                        //BlockFaceVisibility visibility = GetVisibleFaces(block);
-                        BlockFaceVisibility visibility = new BlockFaceVisibility(true, true, true, true, true, true);
-                        BlockMesh blockMesh = GenerateBlock(visibility);
-                        blockMesh.WriteVertices(vertices);
-                        blockMesh.WriteUVs(uvs);
-                        blockMesh.WriteNormals(normals, vertices);
+                        BlockMeshBuilder meshBuilder = GenerateBlock(GetVisibleFaces(block));
+                        meshBuilder.WriteVertices(vertices);
+                        meshBuilder.WriteUVs(uvs);
+                        meshBuilder.WriteNormals(normals, vertices);
+
+                        CubeMesh mesh = new CubeMesh(vertices.ToList(), uvs.ToList(), normals.ToList())
+                        {
+                            Location = block.Location
+                        };
+                        blockMeshes.Add(block, mesh);
+
+                        vertices.Clear();
+                        uvs.Clear();
+                        normals.Clear();
                     }
                 }
             }
 
-            ChunkMesh mesh = new ChunkMesh(vertices, uvs, normals);
-            return mesh;
+            WorldMeshMap.AddChunkCubeMeshMap(chunk, blockMeshes);
         }
 
-        public static BlockMesh GenerateBlock(BlockFaceVisibility visibility)
+        public static BlockMeshBuilder GenerateBlock(BlockFaceVisibility visibility)
         {
-            return BlockMesh.GenerateBlockMesh(
+            return BlockMeshBuilder.GenerateBlockMesh(
                 visibility.Top,
                 visibility.Front,
                 visibility.Left,
@@ -67,14 +78,14 @@ namespace AtominaCraft.Worlds.Chunks.MeshGeneration
             BlockFaceVisibility visibility = new BlockFaceVisibility();
             Chunk chunk = block.Location.Chunk;
             BlockLocation location = block.Location;
-
+        
             Block left = chunk.GetBlockAt(location.X - 1, location.Y, location.Z);
             Block righ = chunk.GetBlockAt(location.X + 1, location.Y, location.Z);
             Block topp = chunk.GetBlockAt(location.X, location.Y + 1, location.Z);
             Block botm = chunk.GetBlockAt(location.X, location.Y - 1, location.Z);
-            Block back = chunk.GetBlockAt(location.X, location.Y, location.Z + 1);
-            Block frnt = chunk.GetBlockAt(location.X, location.Y, location.Z - 1);
-
+            Block back = chunk.GetBlockAt(location.X, location.Y, location.Z - 1);
+            Block frnt = chunk.GetBlockAt(location.X, location.Y, location.Z + 1);
+        
             visibility.Left   = (left == null || left.IsEmpty() || left.IsTransparent);
             visibility.Right  = (righ == null || righ.IsEmpty() || righ.IsTransparent);
             visibility.Top    = (topp == null || topp.IsEmpty() || topp.IsTransparent);

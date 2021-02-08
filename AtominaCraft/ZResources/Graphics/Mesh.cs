@@ -48,32 +48,6 @@ namespace AtominaCraft.ZResources.Graphics
         public bool Is3DTexture { get; set; }
 
         /// <summary>
-        /// Generates a mesh using the given vertices. doesn't support textures, only shading
-        /// </summary>
-        /// <param name="mesh">the vertices</param>
-        public Mesh(float[] mesh)
-        {
-            Vertices = new List<float>(3);
-            VBOs = new int[1];
-            foreach (float vertex in mesh)
-            {
-                Vertices.Add(vertex);
-            }
-
-            // Generate vertex array buffer
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
-
-            VBOs[0] = GL.GenBuffer();
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, VBOs[0]);
-                GL.BufferData(BufferTarget.ArrayBuffer, Vertices.Count * sizeof(float), Vertices.ToArray(), BufferUsageHint.StaticDraw);
-                GL.EnableVertexAttribArray(0);
-                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-            }
-        }
-
-        /// <summary>
         /// Generates a mesh using the given vertices and texture coordinates, and then auto-generates the normals
         /// </summary>
         /// <param name="vertices"></param>
@@ -189,215 +163,216 @@ namespace AtominaCraft.ZResources.Graphics
 
         public Mesh(string fileName)
         {
-            LoadMesh(fileName);
+            if (!File.Exists(fileName))
+            {
+                LogManager.GraphicsLogger.Log($"Mesh doesnt exist: {fileName}");
+                return;
+            }
+
+            string[] meshContents = File.ReadAllLines(fileName);
+            LoadMesh(meshContents);
+        }
+
+        public Mesh(string[] meshData)
+        {
+            LoadMesh(meshData);
         }
 
         /// <summary>
         /// Loads a mesh from a wavefront object file
         /// </summary>
         /// <param name="meshFilePath"></param>
-        public void LoadMesh(string meshFilePath)
+        public void LoadMesh(string[] meshFilePath)
         {
             Vertices = new List<float>();
             UVs = new List<float>();
             Normals = new List<float>();
             VBOs = new int[VBO_COUNT];
-
-            if (!File.Exists(meshFilePath))
+            List<float> vertPalette = new List<float>();
+            List<float> uvPalette = new List<float>();
+            
+            foreach (string line in meshFilePath)
             {
-                LogManager.GraphicsLogger.Log($"Mesh doesnt exist: {meshFilePath}");
-            }
-            else
-            {
-                MeshName = Path.GetFileNameWithoutExtension(meshFilePath);
-
-                List<float> vertPalette = new List<float>();
-                List<float> uvPalette = new List<float>();
-
-                string[] meshContents = File.ReadAllLines(meshFilePath);
-                foreach (string line in meshContents)
+                if (line.Length < 2)
                 {
-                    if (line.Length < 2)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    // Vertex
-                    if (line.Check(0, 2, "v "))
+                // Vertex
+                if (line.Check(0, 2, "v "))
+                {
+                    float[] verts = line.Extract(2).Split(' ').ToFloats();
+                    foreach (float vertex in verts)
                     {
-                        float[] verts = line.Extract(2).Split(' ').ToFloats();
-                        foreach (float vertex in verts)
+                        vertPalette.Add(vertex);
+                    }
+                }
+
+                // Vertex texture coordinate
+                else if (line.Check(0, 3, "vt "))
+                {
+                    // this should only be 2 long, the array
+                    float[] uvs = line.Extract(3).Split(' ').ToFloats();
+                    uvPalette.Add(uvs[0]);
+                    uvPalette.Add(uvs[1]);
+                    if (uvs.Length > 2)
+                    {
+                        uvPalette.Add(uvs[2]);
+                        Is3DTexture = true;
+                    }
+                }
+
+                // Colliders
+                else if (line.Check(0, 2, "c "))
+                {
+                    //int a = 0, b = 0, c = 0;
+                    //if (line[2] == '*')
+                    //{
+                    //    int vIx = vertPalette.Count / 3;
+                    //    a = vIx - 2; b = vIx - 1; c = vIx;
+                    //}
+                    //else
+                    //{
+                    //    int[] colliders = line.Substring(3).Split(' ').ToInts();
+                    //    if (colliders.Length >= 3)
+                    //    {
+                    //        a = colliders[0];
+                    //        b = colliders[1];
+                    //        c = colliders[2];
+                    //    }
+                    //}
+                    //
+                    //Vector3 v1 = vertPalette.FromList((a - 1) * 3);
+                    //Vector3 v2 = vertPalette.FromList((b - 1) * 3);
+                    //Vector3 v3 = vertPalette.FromList((c - 1) * 3);
+                    //Colliders.Add(new Collider(v1, v2, v3));
+                }
+
+                // Faces
+                // aka vertex indices.
+                else if (line.Check(0, 2, "f "))
+                {
+                    // 2/1/1..\n..3/2/1..\n..1/3/1
+                    string[] faces = line.Extract(2).Split(' ');
+
+                    bool floatSlash = false;
+                    int numSlashes = line.CountElements('/');
+
+                    int a = 0, b = 0, c = 0, d = 0;
+                    int at = 0, bt = 0, ct = 0, dt = 0;
+
+                    bool wild = line[2] == '*';
+                    bool wild2 = line[3] == '*';
+                    bool isQuad = false;
+
+                    if (wild)
+                    {
+                        if (numSlashes == 0)
                         {
-                            vertPalette.Add(vertex);
-                        }
-                    }
+                            int vertexIx = vertPalette.Count / 3;
+                            int textureIx = uvPalette.Count / (Is3DTexture ? 3 : 2);
 
-                    // Vertex texture coordinate
-                    else if (line.Check(0, 3, "vt "))
-                    {
-                        // this should only be 2 long, the array
-                        float[] uvs = line.Extract(3).Split(' ').ToFloats();
-                        uvPalette.Add(uvs[0]);
-                        uvPalette.Add(uvs[1]);
-                        if (uvs.Length > 2)
-                        {
-                            uvPalette.Add(uvs[2]);
-                            Is3DTexture = true;
-                        }
-                    }
-
-                    // Colliders
-                    else if (line.Check(0, 2, "c "))
-                    {
-                        //int a = 0, b = 0, c = 0;
-                        //if (line[2] == '*')
-                        //{
-                        //    int vIx = vertPalette.Count / 3;
-                        //    a = vIx - 2; b = vIx - 1; c = vIx;
-                        //}
-                        //else
-                        //{
-                        //    int[] colliders = line.Substring(3).Split(' ').ToInts();
-                        //    if (colliders.Length >= 3)
-                        //    {
-                        //        a = colliders[0];
-                        //        b = colliders[1];
-                        //        c = colliders[2];
-                        //    }
-                        //}
-                        //
-                        //Vector3 v1 = vertPalette.FromList((a - 1) * 3);
-                        //Vector3 v2 = vertPalette.FromList((b - 1) * 3);
-                        //Vector3 v3 = vertPalette.FromList((c - 1) * 3);
-                        //Colliders.Add(new Collider(v1, v2, v3));
-                    }
-
-                    // Faces
-                    // aka vertex indices.
-                    else if (line.Check(0, 2, "f "))
-                    {
-                        // 2/1/1..\n..3/2/1..\n..1/3/1
-                        string[] faces = line.Extract(2).Split(' ');
-
-                        bool floatSlash = false;
-                        int numSlashes = line.CountElements('/');
-
-                        int a = 0, b = 0, c = 0, d = 0;
-                        int at = 0, bt = 0, ct = 0, dt = 0;
-
-                        bool wild = line[2] == '*';
-                        bool wild2 = line[3] == '*';
-                        bool isQuad = false;
-
-                        if (wild)
-                        {
-                            if (numSlashes == 0)
+                            if (wild2)
                             {
-                                int vertexIx = vertPalette.Count / 3;
-                                int textureIx = uvPalette.Count / (Is3DTexture ? 3 : 2);
-
-                                if (wild2)
-                                {
-                                    a = vertexIx - 3; b = vertexIx - 2; c = vertexIx - 1; d = vertexIx;
-                                    at = textureIx - 3; bt = textureIx - 2; ct = textureIx - 1; dt = textureIx;
-                                    isQuad = true;
-                                }
-                                else
-                                {
-                                    a = vertexIx - 2; b = vertexIx - 1; c = vertexIx;
-                                    at = textureIx - 2; bt = textureIx - 1; ct = textureIx;
-                                }
-                            }
-                        }
-                        // 2/3/1 Vertex/Vertex/Vertex
-                        else if (numSlashes == 0)
-                        {
-                            int[] tempFaces = faces.ToInts();
-                            if (faces.Length == 3)
-                            {
-                                a = at = tempFaces[0];
-                                b = bt = tempFaces[1];
-                                c = ct = tempFaces[2];
-                            }
-                            else if (faces.Length == 4)
-                            {
-                                a = at = tempFaces[0];
-                                b = bt = tempFaces[1];
-                                c = ct = tempFaces[2];
-                                d = dt = tempFaces[3];
+                                a = vertexIx - 3; b = vertexIx - 2; c = vertexIx - 1; d = vertexIx;
+                                at = textureIx - 3; bt = textureIx - 2; ct = textureIx - 1; dt = textureIx;
                                 isQuad = true;
                             }
-                        }
-                        // 2/2 3/3 1/1
-                        // V1/T1    V2/T2    V3/T3 
-                        else if (numSlashes == 3)
-                        {
-                            // ... = new element, 2/2...3/3...1/1 to 2/2/3/3/1/1 (trim just in case)
-                            string joinedParts = string.Join('/', faces).Trim();
-                            // 2/2/3/3/1/1 to 2...2...3...3...1...1
-                            int[] faceVertices = joinedParts.Split('/').ToInts();
-                            if (faceVertices.Length >= 6)
+                            else
                             {
-                                a = faceVertices[0];
-                                at = faceVertices[1];
-                                b = faceVertices[2];
-                                bt = faceVertices[3];
-                                c = faceVertices[4];
-                                ct = faceVertices[5];
+                                a = vertexIx - 2; b = vertexIx - 1; c = vertexIx;
+                                at = textureIx - 2; bt = textureIx - 1; ct = textureIx;
                             }
                         }
-                        // is this a quad? idek
-                        else if (numSlashes == 4)
+                    }
+                    // 2/3/1 Vertex/Vertex/Vertex
+                    else if (numSlashes == 0)
+                    {
+                        int[] tempFaces = faces.ToInts();
+                        if (faces.Length == 3)
                         {
-                            string joined = string.Join('/', faces).Trim();
-                            int[] allFaces = joined.Split('/').ToInts();
-                            if (allFaces.Length >= 8)
+                            a = at = tempFaces[0];
+                            b = bt = tempFaces[1];
+                            c = ct = tempFaces[2];
+                        }
+                        else if (faces.Length == 4)
+                        {
+                            a = at = tempFaces[0];
+                            b = bt = tempFaces[1];
+                            c = ct = tempFaces[2];
+                            d = dt = tempFaces[3];
+                            isQuad = true;
+                        }
+                    }
+                    // 2/2 3/3 1/1
+                    // V1/T1    V2/T2    V3/T3 
+                    else if (numSlashes == 3)
+                    {
+                        // ... = new element, 2/2...3/3...1/1 to 2/2/3/3/1/1 (trim just in case)
+                        string joinedParts = string.Join('/', faces).Trim();
+                        // 2/2/3/3/1/1 to 2...2...3...3...1...1
+                        int[] faceVertices = joinedParts.Split('/').ToInts();
+                        if (faceVertices.Length >= 6)
+                        {
+                            a = faceVertices[0];
+                            at = faceVertices[1];
+                            b = faceVertices[2];
+                            bt = faceVertices[3];
+                            c = faceVertices[4];
+                            ct = faceVertices[5];
+                        }
+                    }
+                    // is this a quad? idek
+                    else if (numSlashes == 4)
+                    {
+                        string joined = string.Join('/', faces).Trim();
+                        int[] allFaces = joined.Split('/').ToInts();
+                        if (allFaces.Length >= 8)
+                        {
+                            a = allFaces[0];
+                            at = allFaces[1];
+                            b = allFaces[2];
+                            bt = allFaces[3];
+                            c = allFaces[4];
+                            ct = allFaces[5];
+                            d = allFaces[6];
+                            dt = allFaces[7];
+                        }
+                    }
+                    // 2/1/1 3/2/1 1/3/1
+                    // V1/T1/N1    V2/T2/N2    V3/T3/N3 
+                    else if (numSlashes == 6)
+                    {
+                        string joined = string.Join('/', faces).Trim();
+                        int[] allFaces = joined.Split('/').ToInts();
+                        // 8 just in case... should be 9 but o well
+                        if (allFaces.Length >= 8)
+                        {
+                            if (floatSlash)
+                            {
+                                at = a = allFaces[0];
+                                bt = b = allFaces[2];
+                                ct = c = allFaces[4];
+                            }
+                            else
                             {
                                 a = allFaces[0];
                                 at = allFaces[1];
-                                b = allFaces[2];
-                                bt = allFaces[3];
-                                c = allFaces[4];
-                                ct = allFaces[5];
-                                d = allFaces[6];
-                                dt = allFaces[7];
+                                b = allFaces[3];
+                                bt = allFaces[4];
+                                c = allFaces[6];
+                                ct = allFaces[7];
                             }
                         }
-                        // 2/1/1 3/2/1 1/3/1
-                        // V1/T1/N1    V2/T2/N2    V3/T3/N3 
-                        else if (numSlashes == 6)
-                        {
-                            string joined = string.Join('/', faces).Trim();
-                            int[] allFaces = joined.Split('/').ToInts();
-                            // 8 just in case... should be 9 but o well
-                            if (allFaces.Length >= 8)
-                            {
-                                if (floatSlash)
-                                {
-                                    at = a = allFaces[0];
-                                    bt = b = allFaces[2];
-                                    ct = c = allFaces[4];
-                                }
-                                else
-                                {
-                                    a = allFaces[0];
-                                    at = allFaces[1];
-                                    b = allFaces[3];
-                                    bt = allFaces[4];
-                                    c = allFaces[6];
-                                    ct = allFaces[7];
-                                }
-                            }
-                            //foreach(string number in faces)
-                        }
+                        //foreach(string number in faces)
+                    }
 
-                        else continue;
+                    else continue;
 
-                        AddFace(vertPalette, uvPalette, a, at, b, bt, c, ct, Is3DTexture);
-                        if (isQuad)
-                        {
-                            AddFace(vertPalette, uvPalette, c, ct, d, dt, a, at, Is3DTexture);
-                        }
+                    AddFace(vertPalette, uvPalette, a, at, b, bt, c, ct, Is3DTexture);
+                    if (isQuad)
+                    {
+                        AddFace(vertPalette, uvPalette, c, ct, d, dt, a, at, Is3DTexture);
                     }
                 }
             }

@@ -1,53 +1,28 @@
-﻿using System.Collections.Generic;
-using OpenTK.Graphics.OpenGL;
+﻿using AtominaCraft.ZResources.Maths;
 using System;
+using System.Collections.Generic;
+using OpenTK.Graphics.OpenGL;
+using AtominaCraft.Blocks;
 
-namespace AtominaCraft.Worlds.Chunks.MeshGeneration
+namespace AtominaCraft.Client.BlockRendering.Mesh
 {
-    public class ChunkMesh : IDisposable
+    public class CubeMesh : IDisposable
     {
-        /// <summary>
-        /// The number of vertex buffer objects. Vertex, UV/Textures, and Normals
-        /// </summary>
         public const int VBO_COUNT = 3;
 
-
-
-
-
-        // minecraft remake
-
-
-
-        /// <summary>
-        /// Stores an ID to the vertex arrays object (the object contains all the buffers)
-        /// </summary>
-        public int VAO { get; set; }
-
-        /// <summary>
-        /// Contains IDs to the vertex buffers within the VAO
-        /// </summary>
-        public int[] VBOs { get; set; }
-
-        /// <summary>
-        /// Stores all of the meshes vertices
-        /// </summary>
-        public List<float> Vertices { get; set; }
-        /// <summary>
-        /// Stores all of the meshes texture coordinates
-        /// </summary>
-        public List<float> UVs { get; set; }
-        /// <summary>
-        /// Stores all of the meshes normals
-        /// </summary>
-        public List<float> Normals { get; set; }
+        private int VAO;
+        private int[] VBOs;
+        private List<float> Vertices;
+        private List<float> UVs;
+        private List<float> Normals;
+        public BlockLocation Location;
 
         /// <summary>
         /// Generates a mesh using the given vertices, texture coordinates and normals
         /// <param name="vertices"></param>
         /// <param name="uvs"></param>
         /// <param name="normals"></param>
-        public ChunkMesh(List<float> vertices, List<float> uvs, List<float> normals)
+        public CubeMesh(List<float> vertices, List<float> uvs, List<float> normals)
         {
             Vertices = vertices;
             UVs = uvs;
@@ -90,7 +65,7 @@ namespace AtominaCraft.Worlds.Chunks.MeshGeneration
         public void Draw()
         {
             GL.BindVertexArray(VAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, Vertices.Count);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, Vertices.Count / 3);
         }
 
         /// <summary>

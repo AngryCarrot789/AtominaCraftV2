@@ -28,16 +28,28 @@ namespace AtominaCraft.BlockGrid
         /// DONT EDIT THIS OTHERWISE THE ENTIRE WROLD WILL BREAK XDXDXDXD
         /// </para>
         /// </summary>
-        public const float BLOCK_SCALE = 0.5f;
+        public const float BlockScaleSide = 0.5f;
         /// <summary>
         /// The total "length/size" of a block, in theory starting at the corners not the center
         /// <para>
         ///     This CANNOT be a decimal number. it must be an integral (aka "integer based") number because it does
         /// </para>
         /// </summary>
-        public const int BLOCK_SIZE = 1;
-        public static Vector3 BlockScale = new Vector3(BLOCK_SCALE, BLOCK_SCALE, BLOCK_SCALE);
-        public static Vector3 ChunkScale = new Vector3(Chunk.Width / 2, Chunk.Height / 2, Chunk.Width / 2);
+        public const int BlockWidth = 1;
+
+        //public const int ChunkHeight = 256;
+        //public const int ChunkWidth = 16;
+        //public const int ChunkIndexableHeight = 255;
+        //public const int ChunkIndexableWidth = 15;
+
+        // These are editable values btw. If the math breaks when changing these... something isnt right
+        public const int ChunkHeight = 64;
+        public const int ChunkWidth = 8;
+        public const int ChunkIndexableHeight = ChunkHeight - 1;
+        public const int ChunkIndexableWidth = ChunkWidth - 1;
+
+        public static Vector3 BlockScale = new Vector3(BlockScaleSide, BlockScaleSide, BlockScaleSide);
+        public static Vector3 ChunkScale = new Vector3(ChunkWidth / 2, ChunkHeight / 2, ChunkWidth / 2);
 
 
         // Stops having to create 100000s of vectors per second
@@ -58,7 +70,7 @@ namespace AtominaCraft.BlockGrid
         /// <returns></returns>
         public static int GetBlockXZOffsetByChunk(int block, int chunk)
         {
-            return (chunk * Chunk.Width) + block;
+            return (chunk * ChunkWidth) + block;
         }
 
         /// <summary>
@@ -84,9 +96,9 @@ namespace AtominaCraft.BlockGrid
         public static BlockLocation GetBlankChunkOffset(ChunkLocation chunkLocation)
         {
             TempB.Set(
-                chunkLocation.X * Chunk.Width,
+                chunkLocation.X * ChunkWidth,
                 0,
-                chunkLocation.Z * Chunk.Width);
+                chunkLocation.Z * ChunkWidth);
             return TempB;
         }
 
@@ -109,9 +121,9 @@ namespace AtominaCraft.BlockGrid
         public static Vector3 WTMGetBlock(int x, int y, int z)
         {
             return new Vector3(
-                x + BLOCK_SCALE,
-                y + BLOCK_SCALE,
-                z + BLOCK_SCALE);
+                x + BlockScaleSide,
+                y + BlockScaleSide,
+                z + BlockScaleSide);
         }
 
         /// <summary>
@@ -122,9 +134,9 @@ namespace AtominaCraft.BlockGrid
         public static Vector3 WTMGetBlock(BlockLocation location)
         {
             return new Vector3(
-                location.X + BLOCK_SCALE,
-                location.Y + BLOCK_SCALE,
-                location.Z + BLOCK_SCALE);
+                location.X + BlockScaleSide,
+                location.Y + BlockScaleSide,
+                location.Z + BlockScaleSide);
         }
 
         /// <summary>
@@ -135,9 +147,9 @@ namespace AtominaCraft.BlockGrid
         public static Vector3 WTMGetChunk(int x, int z)
         {
             return new Vector3(
-                (x * Chunk.Width) + (Chunk.Width / 2),
-                Chunk.Height / 2,
-                (z * Chunk.Width) + (Chunk.Width / 2));
+                (x * ChunkWidth) + (ChunkWidth / 2),
+                ChunkScale.Y,
+                (z * ChunkWidth) + (ChunkWidth / 2));
         }
 
         /// <summary>
@@ -148,6 +160,11 @@ namespace AtominaCraft.BlockGrid
         public static Vector3 WTMGetChunk(ChunkLocation location)
         {
             return WTMGetChunk(location.X, location.Z);
+        }
+
+        public static Vector3 WTMGetWorldBlock(ChunkLocation chunk, BlockLocation location)
+        {
+            return WTMGetChunk(chunk) + WTMGetBlock(location) - ChunkScale;
         }
 
         //
@@ -161,10 +178,10 @@ namespace AtominaCraft.BlockGrid
         /// <returns></returns>
         public static BlockLocation MTWGetBlock(Vector3 pos)
         {
-            TempB.X = pos.X > 0 ? MTWGetPositiveNumber(pos.X) : (MTWGetNegativeNumber(pos.X) - BLOCK_SIZE);
-            TempB.Y = pos.Y > 0 ? MTWGetPositiveNumber(pos.Y) : (MTWGetNegativeNumber(pos.Y) - BLOCK_SIZE);
-            TempB.Z = pos.Z > 0 ? MTWGetPositiveNumber(pos.Z) : (MTWGetNegativeNumber(pos.Z) - BLOCK_SIZE);
-            return TempB;
+            return new BlockLocation(
+                pos.X > 0 ? MTWGetPositiveNumber(pos.X) : (MTWGetNegativeNumber(pos.X) - BlockWidth),
+                pos.Y > 0 ? MTWGetPositiveNumber(pos.Y) : (MTWGetNegativeNumber(pos.Y) - BlockWidth),
+                pos.Z > 0 ? MTWGetPositiveNumber(pos.Z) : (MTWGetNegativeNumber(pos.Z) - BlockWidth));
         }
 
         /// <summary>
@@ -174,21 +191,21 @@ namespace AtominaCraft.BlockGrid
         /// <returns></returns>
         public static ChunkLocation MTWGetChunk(Vector3 pos)
         {
-            TempC.X = pos.X > 0 ? MTWGetChunkPositive(pos.X) : MTWGetChunkNegative(pos.X);
-            TempC.Z = pos.Z > 0 ? MTWGetChunkPositive(pos.Z) : MTWGetChunkNegative(pos.Z);
-            return TempC;
+            return new ChunkLocation(
+                pos.X > 0 ? MTWGetChunkPositive(pos.X) : MTWGetChunkNegative(pos.X),
+                pos.Z > 0 ? MTWGetChunkPositive(pos.Z) : MTWGetChunkNegative(pos.Z));
         }
 
         public static int MTWGetChunkPositive(float a)
         {
-            return MTWGetPositiveNumber(a) / Chunk.Width;
+            return MTWGetPositiveNumber(a) / ChunkWidth;
         }
 
         // floor and ceil work weirdly with negative numbers. idk if 
-        // i should have to do '- Chunk.Width'... cant be botherd to fix it tho :))))
+        // i should have to do '- ChunkWidth'... cant be botherd to fix it tho :))))
         public static int MTWGetChunkNegative(float a)
         {
-            return (MTWGetNegativeNumber(a) - Chunk.Width) / Chunk.Width;
+            return (MTWGetNegativeNumber(a) - ChunkWidth) / ChunkWidth;
         }
 
         public static int MTWGetPositiveNumber(float a)

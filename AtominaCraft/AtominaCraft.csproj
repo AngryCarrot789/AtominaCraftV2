@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Blocks\Data\" />
     <Folder Include="ZResources\Logging\Debug\" />
   </ItemGroup>
 

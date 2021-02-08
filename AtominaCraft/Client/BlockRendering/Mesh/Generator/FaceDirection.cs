@@ -1,4 +1,8 @@
-﻿namespace AtominaCraft.Worlds.Chunks.MeshGeneration.Face
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AtominaCraft.Client.BlockRendering.Mesh.Generator
 {
     public enum FaceDirection
     {

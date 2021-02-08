@@ -1,8 +1,7 @@
-﻿using AtominaCraft.Worlds.Chunks;
+﻿using AtominaCraft.BlockGrid;
+using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.ZResources.Maths;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AtominaCraft.Blocks
 {
@@ -17,12 +16,17 @@ namespace AtominaCraft.Blocks
         public BlockLocation(Chunk chunk, int x, int y, int z)
         {
             Chunk = chunk;
-            Set(x, y, z);
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public BlockLocation(int x, int y, int z)
         {
-            Set(x, y, z);
+            Chunk = null;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public void Set(Vector3 vector)
@@ -66,7 +70,7 @@ namespace AtominaCraft.Blocks
 
         public BlockLocation GetWorldLocation(ChunkLocation chunk)
         {
-            return new BlockLocation((chunk.X * Chunk.Width) + X, Y, (chunk.Z * Chunk.Width) + Z);
+            return new BlockLocation((chunk.X * GridLatch.ChunkWidth) + X, Y, (chunk.Z * GridLatch.ChunkWidth) + Z);
         }
 
         public override bool Equals(object obj)

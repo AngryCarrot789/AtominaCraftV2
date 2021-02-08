@@ -102,17 +102,19 @@ namespace AtominaCraft.ZResources
             return shaderFilePath ?? (File.Exists(shaderFilePath) ? shaderFilePath : string.Empty);
         }
 
-        /// <summary>
-        /// Locates a shader file in the shader directory
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public static string LocateMesh(string fileName)
-        {
-            string meshesPath = GetMeshesDirectory();
-            string meshesFilePath = Path.Combine(meshesPath, fileName);
-            return meshesFilePath ?? (File.Exists(meshesFilePath) ? meshesFilePath : string.Empty);
-        }
+        // dont need anymore xd
+        // just putting the meshes in code cus why not
+        ///// <summary>
+        ///// Locates a shader file in the shader directory
+        ///// </summary>
+        ///// <param name="fileName"></param>
+        ///// <returns></returns>
+        //public static string LocateMesh(string fileName)
+        //{
+        //    string meshesPath = GetMeshesDirectory();
+        //    string meshesFilePath = Path.Combine(meshesPath, fileName);
+        //    return meshesFilePath ?? (File.Exists(meshesFilePath) ? meshesFilePath : string.Empty);
+        //}
 
         /// <summary>
         /// Locates a texture file in the texture directory
