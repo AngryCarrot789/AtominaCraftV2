@@ -1,8 +1,10 @@
 ﻿using AtominaCraft.Blocks;
 using AtominaCraft.Memory.Pools;
+using AtominaCraft.Worlds;
 using AtominaCraft.Worlds.Chunks;
 using AtominaCraft.ZResources.Maths;
 using System;
+using System.Security.Policy;
 
 namespace AtominaCraft.BlockGrid
 {
@@ -183,6 +185,11 @@ namespace AtominaCraft.BlockGrid
                 pos.Y > 0 ? MTWGetPositiveNumber(pos.Y) : (MTWGetNegativeNumber(pos.Y) - BlockWidth),
                 pos.Z > 0 ? MTWGetPositiveNumber(pos.Z) : (MTWGetNegativeNumber(pos.Z) - BlockWidth));
         }
+
+        //public static BlockLocation MTWGetWorldBlock(World world, Vector3 pos)
+        //{
+        //    return new BlockLocation((int)pos.X & 15, (int)pos.Y, (int)pos.Z & 15);
+        //}
 
         /// <summary>
         /// Gets the world coordinates of a chunk from the Matrix location

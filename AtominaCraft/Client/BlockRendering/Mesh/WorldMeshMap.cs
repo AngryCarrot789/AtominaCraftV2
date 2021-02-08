@@ -33,6 +33,17 @@ namespace AtominaCraft.Client.BlockRendering.Mesh
             }
         }
 
+        public static void RegenerateChunk(Chunk chunk)
+        {
+            Dictionary<Block, CubeMesh> blockMap = ChunkCubeMeshMap[chunk];
+            foreach(CubeMesh mesh in blockMap.Values)
+            {
+                mesh.Dispose();
+            }
+            ChunkCubeMeshMap.Remove(chunk);
+            BlockMeshGenerator.GenerateChunk(chunk);
+        }
+
         public static Dictionary<Block, CubeMesh> GetChunkCubeMeshMap(Chunk chunk)
         {
             return ChunkCubeMeshMap[chunk];

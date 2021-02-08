@@ -50,6 +50,30 @@ namespace AtominaCraft.Blocks
             BoundingBox = new AxisAlignedBB();
         }
 
+        /// <summary>
+        /// Removes the block from the chunk it's in
+        /// </summary>
+        public void BreakNaturally()
+        {
+            if (HasLocation())
+            {
+                Location.Chunk.BreakBlockNaturally(Location);
+            }
+        }
+
+        /// <summary>
+        /// States if the location of this block isn't <see langword="null"/> and exists somewhere
+        /// </summary>
+        /// <returns></returns>
+        public bool HasLocation()
+        {
+            return World != null && Location != null && Location.Chunk != null;
+        }
+
+        /// <summary>
+        /// Returns true if the block ID is air
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             return ID == 0;

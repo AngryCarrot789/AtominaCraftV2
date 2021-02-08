@@ -1,4 +1,5 @@
 ﻿using AtominaCraft.Blocks;
+using AtominaCraft.Client.BlockRendering.Mesh;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,8 @@ namespace AtominaCraft.Worlds.Chunks
         public World World { get; set; }
 
         public Dictionary<BlockLocation, Block> Blocks { get; set; }
+
+        public bool HaltMeshRegeneration { get; set; }
 
         public Chunk(World world, ChunkLocation location)
         {
@@ -53,6 +56,49 @@ namespace AtominaCraft.Worlds.Chunks
             else
             {
                 Blocks.Add(location, block);
+            }
+        }
+
+        /// <summary>
+        /// Checks if a block at the given location exists 
+        /// </summary>
+        /// <param name="location"></param>
+        /// <returns></returns>
+        public bool DoesBlockExist(BlockLocation location)
+        {
+            return Blocks.TryGetValue(location, out Block unused);
+        }
+
+        /// <summary>
+        /// Removes the given block from the chunk (if it exists in there... that is)
+        /// </summary>
+        /// <param name="location"></param>
+        public void BreakBlockNaturally(Block block)
+        {
+            if (block.HasLocation())
+            {
+                BreakBlockNaturally(block.Location);
+            }
+        }
+
+        /// <summary>
+        /// Removes the block at the given location from the chunk (if it exists in there... that is)
+        /// </summary>
+        /// <param name="location"></param>
+        public void BreakBlockNaturally(BlockLocation location)
+        {
+            if (DoesBlockExist(location))
+            {
+                Blocks.Remove(location);
+                RegenerateMesh();
+            }
+        }
+
+        public void RegenerateMesh()
+        {
+            if (!HaltMeshRegeneration)
+            {
+                WorldMeshMap.RegenerateChunk(this);
             }
         }
 

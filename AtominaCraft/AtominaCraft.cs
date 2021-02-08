@@ -19,11 +19,14 @@ using AtominaCraft.ZLaunch;
 using AtominaCraft.Client.BlockRendering.Mesh;
 using AtominaCraft.Client.BlockRendering.Mesh.Generator;
 using AtominaCraft.Client.BlockRendering;
+using AtominaCraft.Blocks;
+using AtominaCraft.BlockGrid;
 
 namespace AtominaCraft
 {
     public class AtominaCraft : GameWindow
     {
+        byte[] reserveMemory = new byte[1048576];
         public static AtominaCraft Instance { get; private set; }
 
         public List<World> Worlds { get; private set; }
@@ -44,6 +47,7 @@ namespace AtominaCraft
 
         public bool InitialiseGameWindow()
         {
+            GC.AddMemoryPressure(33554432);
             FullscreenToggle = new ToggleButton((isToggled) =>
             {
                 if (isToggled) 
@@ -270,6 +274,16 @@ namespace AtominaCraft
                     Player.World.Sky.SkyColour -= 0.002f;
                     Player.World.Sky.SkyColour.ClampInstance(0.1f, 1.0f);
                 }
+
+                // this does work but 
+                // Block block = Player.Chunk.GetBlockAt(GridLatch.MTWGetWorldBlock(Player.World, Player.Position));
+                // doesnt really... rip
+                //if (MouseState.IsButtonDown(MouseButton.Left))
+                //{
+                //    Block block = Player.Chunk.GetBlockAt(GridLatch.MTWGetWorldBlock(Player.World, Player.Position));
+                //    if (block != null)
+                //        block.BreakNaturally();
+                //}
 
                 Player.World.Update();
             }
