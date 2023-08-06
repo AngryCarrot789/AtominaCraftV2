@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTK" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ZResources\Logging\Debug\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="REghZy.Collections, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\VSProjsV2\REghZy\DLL\REghZy.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="REghZy.MathsF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\VSProjsV2\REghZy\DLL\REghZy.MathsF.dll</HintPath>
+    </Reference>
+    <Reference Include="REghZy.Utils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\VSProjsV2\REghZy\DLL\REghZy.Utils.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
